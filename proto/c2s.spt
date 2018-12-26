@@ -3,11 +3,8 @@
     session 1 : integer
 }
 
-helo 1 {
-    request {
-        msg 0 : string
-    }
+handshake 1 {
     response {
-        msg 0 : string
+        challenge 0 : string
     }
 }

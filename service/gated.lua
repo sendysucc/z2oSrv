@@ -14,6 +14,18 @@ skynet.register_protocol({
     id = skynet.PTYPE_CLIENT,
 })
 
+local function close_fd(fd)
+    local c = connection[fd]
+    if c then
+        connection[fd] = nil
+    end
+end
+
+local function close_client(fd)
+    close_fd(fd)
+    gateserver.closeclient(fd)
+end
+
 --listen socket open success
 function handler.open(source,conf)
 
@@ -24,12 +36,11 @@ function handler.message(fd,msg,sz)
     local c = connection[fd]
     local agent = c.agent
     if agent then
-        agent.req.rawmessage(fd,msg,sz)
+        agent.post.rawmessage(fd,msg,sz)
     else
-        local obj = snax.queryservice("login")
-        if obj then
-            obj.req.rawmessage(fd,msg,sz)
-        end
+        skynet.error('client no agent ! drop message')
+
+        close_client(fd)
     end
 end
 
@@ -44,7 +55,7 @@ function handler.connect(fd,addr)
                 fd = fd,
                 ip = addr,
             }
-            c.agent = snax.queryservice("hall")
+            c.agent = snax.newservice("agent",fd)
             connection[fd] = c
             gateserver.openclient(fd)
         else
@@ -56,7 +67,11 @@ end
 
 --client disconnet
 function handler.disconnect(fd)
-
+    local c = assert(connection[fd])
+    local agent = c.agent
+    if agent then
+        agent.post.disconnect()
+    end
 end
 
 --client socket error
@@ -82,7 +97,7 @@ function CMD.forward(source,fd,address,snaxname)
 end
 
 function CMD.kick(source,fd)
-    gateserver.closeclient(fd)
+    close_client(fd)
 end
 
 gateserver.start(handler)
