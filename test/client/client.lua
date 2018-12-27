@@ -8,6 +8,8 @@ end
 local socket = require "client.socket"
 local sproto = require "sproto"
 local helper = require "helper"
+local crypt = require "client.crypt"
+
 local session = 0
 
 local host = sproto.new( helper.getprotobin("./proto/s2c.spt") ):host "package"
@@ -92,12 +94,42 @@ local function dispatch_package()
 			break
 		end
 
-		print_package(host:dispatch(v))
+		local resType , name , args = host:dispatch(v)
+		return args
 	end
+end
+
+local function receive_data()
+	local rets = nil
+	while true do
+		rets = dispatch_package()
+		if rets then
+			break
+		end
+	end
+	return rets
 end
 
 send_request("handshake")
 
-while true do
-    dispatch_package()
-end
+local rets = receive_data()
+local challenge = crypt.base64decode(rets.challenge)
+
+
+local clientkey = crypt.randomkey()
+
+send_request("exeys",{ cye= crypt.base64encode( crypt.dhexchange(clientkey)) })
+
+local rets = receive_data()
+local serverkey = crypt.base64decode(rets.sye)
+print('------->serverkey:', serverkey)
+
+local secret = crypt.dhsecret( serverkey, clientkey )
+
+local hmac = crypt.hmac64(challenge,secret)
+
+send_request("exse", {cse = crypt.base64encode(hmac) })
+
+local rets = receive_data()
+
+print('-------->code: ', rets.ret)

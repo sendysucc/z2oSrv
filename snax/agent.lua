@@ -8,6 +8,11 @@ local snax = require "skynet.snax"
 local fd = -1
 local sp_host
 local sp_request
+local clientkey
+local serverkey
+local challenge
+local secret 
+
 local REQUEST = {}
 
 local function send_package(pack)
@@ -16,9 +21,37 @@ local function send_package(pack)
 end
 
 function REQUEST.handshake(type,args, response)
-    local challenge = crypt.randomkey()
+    challenge = crypt.randomkey()
     if response then
         send_package( response( {challenge = crypt.base64encode(challenge) }) )
+    end
+end
+
+function REQUEST.exeys(type,args,response)
+    clientkey = crypt.base64decode(args.cye)
+    print('---------->clientkey:',clientkey)
+    
+    serverkey = crypt.randomkey()
+    
+    if response then
+        send_package(response( {sye = crypt.base64encode( crypt.dhexchange( serverkey) )} ))
+    end
+end
+
+function REQUEST.exse(type,args,response)
+    local chmac = crypt.base64decode( args.cse )
+    secret = crypt.dhsecret(clientkey, serverkey)
+
+    local shmac = crypt.hmac64(challenge,secret)
+
+    if chmac == shmac then
+        if response then
+            send_package( response({ret = 0}) )
+        end
+    else
+        if response then
+            send_package( response({ret = 1}) )
+        end
     end
 end
 

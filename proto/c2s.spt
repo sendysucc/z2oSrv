@@ -8,3 +8,21 @@ handshake 1 {
         challenge 0 : string
     }
 }
+
+exeys 2 {
+    request {
+        cye 0 : string
+    }
+    response {
+        sye 0 : string
+    }
+}
+
+exse 3 {
+    request {
+        cse 0 : string
+    }
+    response {
+        ret 0 : integer
+    }
+}
