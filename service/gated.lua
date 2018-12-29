@@ -56,6 +56,7 @@ function handler.connect(fd,addr)
                 ip = addr,
             }
             c.agent = snax.newservice("agent",fd)
+            print('------->handle of agent :' .. tostring(c.agent.handle))
             connection[fd] = c
             gateserver.openclient(fd)
         else

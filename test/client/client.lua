@@ -11,6 +11,7 @@ local helper = require "helper"
 local crypt = require "client.crypt"
 
 local session = 0
+local secret 
 
 local host = sproto.new( helper.getprotobin("./proto/s2c.spt") ):host "package"
 local request = host:attach(sproto.new( helper.getprotobin("./proto/c2s.spt")) )
@@ -24,7 +25,12 @@ end
 
 local function send_request(name,args)
     session = session + 1
-    local str = request(name,args, session)
+	local str = request(name,args, session)
+	
+	if secret then
+		str = crypt.base64encode( crypt.desencode(secret,str) )
+	end
+
     send_package(fd,str)
 end
 
@@ -93,7 +99,9 @@ local function dispatch_package()
 		if not v then
 			break
 		end
-
+		if secret then
+			v = crypt.desdecode(secret ,crypt.base64decode(v) )
+		end
 		local resType , name , args = host:dispatch(v)
 		return args
 	end
@@ -124,12 +132,32 @@ local rets = receive_data()
 local serverkey = crypt.base64decode(rets.sye)
 print('------->serverkey:', serverkey)
 
-local secret = crypt.dhsecret( serverkey, clientkey )
+local tempsecret = crypt.dhsecret( serverkey, clientkey )
 
-local hmac = crypt.hmac64(challenge,secret)
+local hmac = crypt.hmac64(challenge,tempsecret)
 
 send_request("exse", {cse = crypt.base64encode(hmac) })
 
 local rets = receive_data()
 
-print('-------->code: ', rets.ret)
+if rets.ret == 0 then
+	secret = tempsecret
+end
+print('-------->return : ', rets.ret)
+
+
+send_request("sayhello",{msg = "hello , after secret encode"})
+local rets = receive_data()
+print(rets.msg)
+
+send_request("verifycode",{agentcode = 10001})
+
+local rets = receive_data()
+print('---------verifycode -----------')
+print(rets.ret)
+print(rets.verifycode)
+
+send_request("register",{ cellphone = "09566014786" , password="sendysucc", agentcode=10001 , verifycode = rets.verifycode ,promotecode = 10})
+local rets = receive_data()
+print('---------register -----------')
+print(rets.ret)

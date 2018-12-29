@@ -26,3 +26,37 @@ exse 3 {
         ret 0 : integer
     }
 }
+
+verifycode 4 {
+    request {
+        agentcode 0 : string
+    }
+
+    response {
+        ret 0 : integer
+        verifycode 1 : string
+    }
+}
+
+register 5 {
+    request {
+        cellphone 0 : string
+        password 1 : string
+        verifycode 2 : string
+        agentcode 3 : string
+        promotecode 4 : integer
+        
+    }
+    response {
+        ret 0 : integer 
+    }
+}
+
+sayhello 6 {
+    request {
+        msg 0 : string
+    }
+    response {
+        msg 0 : string
+    }
+}

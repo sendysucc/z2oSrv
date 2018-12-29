@@ -5,13 +5,13 @@ function init(...)
 
 end
 
-
-function response.handshake()
-
-end
-
-function response.register()
-
+function response.register(cellphone, password, agentcode,promotecode)
+    local obj = snax.queryservice("dbmanager")
+    if obj then
+        return obj.req.register(cellphone,password,agentcode,promotecode)
+    else
+        return 1    -- obj not exists
+    end
 end
 
 function response.login()
