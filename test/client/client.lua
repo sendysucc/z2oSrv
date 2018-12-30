@@ -146,9 +146,9 @@ end
 print('-------->return : ', rets.ret)
 
 
-send_request("sayhello",{msg = "hello , after secret encode"})
-local rets = receive_data()
-print(rets.msg)
+-- send_request("sayhello",{msg = "hello , after secret encode"})
+-- local rets = receive_data()
+-- print(rets.msg)
 
 send_request("verifycode",{agentcode = 10001})
 

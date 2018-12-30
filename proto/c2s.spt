@@ -45,18 +45,55 @@ register 5 {
         verifycode 2 : string
         agentcode 3 : string
         promotecode 4 : integer
-        
     }
     response {
         ret 0 : integer 
     }
 }
 
-sayhello 6 {
+login 6 {
     request {
-        msg 0 : string
+        cellphone 0 : string
+        password 1 : string
     }
     response {
-        msg 0 : string
+        ret 0 : integer
+        cellphone 1 : string
+        password 2 : string
+        userid 3 : integer
+        username 4 : string
+        gold 5 : integer
+        diamond 6 : integer
+        avatorid 7 : integer
+    }
+/}
+
+.gameitem {
+    gameid 0 : integer
+    gamename 1 : string
+}
+
+.roomitem {
+    gameid 0 : integer
+    roomid 1 : integer
+    minentry 2 : integer
+    maxentry 3 : integer
+    roomname 4 : string
+    onlines 5 : integer
+}
+
+gamelist 7 {
+    response {
+        games 0 : *gameitem
+    }
+}
+
+roomlist 8 {
+    request {
+        gameid 0 : integer
+    }
+
+    response {
+        rooms 0 : *roomitem
     }
 }

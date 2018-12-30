@@ -69,10 +69,10 @@ function REQUEST.verifycode(args,response)
     end
 end
 
-function REQUEST.sayhello(args,response)
-    print('------->sayhello , msg: ' .. args.msg)
-    send_package(response,{msg=args.msg})
-end
+-- function REQUEST.sayhello(args,response)
+--     print('------->sayhello , msg: ' .. args.msg)
+--     send_package(response,{msg=args.msg})
+-- end
 
 function REQUEST.register(args,response)
     if args.verifycode ~= _vcode then
