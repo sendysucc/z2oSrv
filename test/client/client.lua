@@ -161,3 +161,8 @@ send_request("register",{ cellphone = "09566014786" , password="sendysucc", agen
 local rets = receive_data()
 print('---------register -----------')
 print(rets.ret)
+
+send_request("login", {cellphone="09566014786", password="sendysucc"})
+local rets = receive_data()
+print('--------- login -------------')
+print(rets.ret,rets.cellphone,rets.password)

@@ -6,6 +6,8 @@ skynet.start(function()
     skynet.newservice("debug_console",30000)
     --start database manager
     snax.uniqueservice("dbmanager")
+    --start gamemanager 
+    snax.uniqueservice("gamemanager")
     --start player manager
     snax.uniqueservice("playermanager")
     --start filter 
@@ -14,7 +16,7 @@ skynet.start(function()
     snax.uniqueservice("hall")
     --start login
     snax.uniqueservice("login")
-
+    
     -- start gate
     local gate = skynet.newservice("gated")
     skynet.send(gate,'lua','open', {

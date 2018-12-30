@@ -66,7 +66,7 @@ login 6 {
         diamond 6 : integer
         avatorid 7 : integer
     }
-/}
+}
 
 .gameitem {
     gameid 0 : integer

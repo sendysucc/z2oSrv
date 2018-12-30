@@ -88,6 +88,16 @@ function REQUEST.register(args,response)
     end
 end
 
+function REQUEST.login(args,response)
+    local obj = snax.queryservice("login")
+    if obj then
+        local ret = obj.req.login(args.cellphone, args.password)
+        send_package(response,{ret = 0, cellphone = args.cellphone, password = args.password , userid = 10010, username = "z玩家10010", gold = 100, diamond = 10, avatorid = 8 })
+    else
+        send_package(response,{ret = 1})
+    end
+end
+
 function init(...)
     fd = ...
     sp_host = sproto.new(helper.getprotobin("./proto/c2s.spt")):host("package")

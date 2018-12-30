@@ -14,7 +14,13 @@ function response.register(cellphone, password, agentcode,promotecode)
     end
 end
 
-function response.login()
+function response.login(cellphone, password)
+    local obj = snax.queryservice("dbmanager")
+    if obj then
+        return obj.req.login(cellphone,password)
+    else
+        return 1
+    end
 
 end
 

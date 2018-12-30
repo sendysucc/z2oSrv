@@ -102,4 +102,3 @@ function CMD.kick(source,fd)
 end
 
 gateserver.start(handler)
-

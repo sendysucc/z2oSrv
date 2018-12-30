@@ -30,3 +30,8 @@ function response.register(cellphone,password,agentcode,promotecode)
     print('------------> dbmanager [register] :', cellphone,password,agentcode,promotecode)
     return 0
 end
+
+function response.login(cellphone,password)
+    print('-----------> dbmanager [login] :',cellphone,password)
+    return 0
+end
