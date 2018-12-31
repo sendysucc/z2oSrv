@@ -35,3 +35,9 @@ function response.login(cellphone,password)
     print('-----------> dbmanager [login] :',cellphone,password)
     return 0
 end
+
+function response.gamelist()
+    local sql_str = 'select * from game where enable = 1;'
+    local res = db:query(sql_str)
+    
+end
