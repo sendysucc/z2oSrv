@@ -4,6 +4,7 @@ local crypt = require "skynet.crypt"
 local sproto = require "sproto"
 local helper = require "helper"
 local snax = require "skynet.snax"
+local sprotoloader = require "sprotoloader"
 
 local fd = -1
 local sp_host
@@ -63,7 +64,6 @@ function REQUEST.verifycode(args,response)
         send_package(response, {ret = 1})   --间隔时间太短,请120秒后在获取验证码
     else
         req_verify_time = skynet.now()
-
         _vcode = genverifycode()
         send_package(response, { ret = 0 , verifycode = _vcode })
     end
@@ -105,8 +105,10 @@ end
 
 function init(...)
     fd = ...
-    sp_host = sproto.new(helper.getprotobin("./proto/c2s.spt")):host("package")
-    sp_request = sp_host:attach(sproto.new(helper.getprotobin("./proto/s2c.spt")))
+    -- sp_host = sproto.new(helper.getprotobin("./proto/c2s.spt")):host("package")
+    -- sp_request = sp_host:attach(sproto.new(helper.getprotobin("./proto/s2c.spt")))
+    sp_host = sprotoloader.load(1):host "package"
+    sp_request = sp_host:attach(sprotoloader.load(2))
 end
 
 function accept.rawmessage(fd,msg,sz)

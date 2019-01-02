@@ -157,7 +157,12 @@ print('---------verifycode -----------')
 print(rets.ret)
 print(rets.verifycode)
 
-send_request("register",{ cellphone = "09566014786" , password="sendysucc", agentcode=10001 , verifycode = rets.verifycode ,promotecode = 10})
+-- send_request("register",{ cellphone = "09566014786" , password="sendysucc", agentcode=10001 , verifycode = rets.verifycode ,agentcode = 1,promotecode = 1})
+-- local rets = receive_data()
+-- print('---------register -----------')
+-- print(rets.ret)
+
+send_request("register",{ cellphone = "09566014768" , password="sendysucc", agentcode=10001 , verifycode = rets.verifycode ,agentcode = 1,promotecode = 1})
 local rets = receive_data()
 print('---------register -----------')
 print(rets.ret)

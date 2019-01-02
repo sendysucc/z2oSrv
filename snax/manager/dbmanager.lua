@@ -4,8 +4,55 @@ local mysql = require "skynet.db.mysql"
 
 local db
 
+local function dump(obj)
+    local getIndent, quoteStr, wrapKey, wrapVal, dumpObj
+    getIndent = function(level)
+        return string.rep("\t", level)
+    end
+    quoteStr = function(str)
+        return '"' .. string.gsub(str, '"', '\\"') .. '"'
+    end
+    wrapKey = function(val)
+        if type(val) == "number" then
+            return "[" .. val .. "]"
+        elseif type(val) == "string" then
+            return "[" .. quoteStr(val) .. "]"
+        else
+            return "[" .. tostring(val) .. "]"
+        end
+    end
+    wrapVal = function(val, level)
+        if type(val) == "table" then
+            return dumpObj(val, level)
+        elseif type(val) == "number" then
+            return val
+        elseif type(val) == "string" then
+            return quoteStr(val)
+        else
+            return tostring(val)
+        end
+    end
+    dumpObj = function(obj, level)
+        if type(obj) ~= "table" then
+            return wrapVal(obj)
+        end
+        level = level + 1
+        local tokens = {}
+        tokens[#tokens + 1] = "{"
+        for k, v in pairs(obj) do
+            tokens[#tokens + 1] = getIndent(level) .. wrapKey(k) .. " = " .. wrapVal(v, level) .. ","
+        end
+        tokens[#tokens + 1] = getIndent(level - 1) .. "}"
+        return table.concat(tokens, "\n")
+    end
+    return dumpObj(obj, 0)
+end
+
+local function escape(param)
+    return mysql.quote_sql_str(param)
+end
+
 function init(...)
-    skynet.error("--------> start dbmanager")
     local function on_connect(db) 
         db:query("set charset utf8")
         skynet.error('connect to database success !')
@@ -27,17 +74,31 @@ function init(...)
 end
 
 function response.register(cellphone,password,agentcode,promotecode)
-    print('------------> dbmanager [register] :', cellphone,password,agentcode,promotecode)
-    return 0
+    local sql_str = string.format("call proc_register(%s,%s,%d,%s);", escape(cellphone), escape(password), agentcode , escape(promotecode) )
+    local ret = db:query(sql_str)
+    if ret.badresult then
+        skynet.error('[db] register procedure errorno :' .. ret.errno .. ", code:" .. ret.sqlstate)
+        return 3
+    else
+        return (ret[1][1].errcode)
+    end
 end
 
 function response.login(cellphone,password)
-    print('-----------> dbmanager [login] :',cellphone,password)
-    return 0
+    local sql_str = string.format("call proc_login(%s,%s)", escape(cellphone), escape(password))
+    local ret = db:query(sql_str)
+    if ret.badresult then
+        skynet.error('[db] login procedure errorno: ' .. ret.errno .. ', code:' .. ret.sqlstate)
+        return {ret = 3}
+    else
+        local resp = ret[1][1]
+        resp.ret = 0
+        return resp
+    end
+    
 end
 
 function response.gamelist()
     local sql_str = 'select * from game where enable = 1;'
     local res = db:query(sql_str)
-    
 end
