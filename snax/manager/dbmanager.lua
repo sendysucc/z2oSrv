@@ -1,6 +1,7 @@
 local skynet = require "skynet"
 local snax = require "skynet.snax"
 local mysql = require "skynet.db.mysql"
+local errcode = require "errorcode"
 
 local db
 
@@ -78,7 +79,7 @@ function response.register(cellphone,password,agentcode,promotecode)
     local ret = db:query(sql_str)
     if ret.badresult then
         skynet.error('[db] register procedure errorno :' .. ret.errno .. ", code:" .. ret.sqlstate)
-        return 3
+        return errcode.code.DBSYNTAXERROR
     else
         return (ret[1][1].errcode)
     end
@@ -89,16 +90,21 @@ function response.login(cellphone,password)
     local ret = db:query(sql_str)
     if ret.badresult then
         skynet.error('[db] login procedure errorno: ' .. ret.errno .. ', code:' .. ret.sqlstate)
-        return {ret = 3}
+        return { errcode = errcode.code.DBSYNTAXERROR }
     else
         local resp = ret[1][1]
-        resp.ret = 0
         return resp
     end
-    
 end
 
 function response.gamelist()
     local sql_str = 'select * from game where enable = 1;'
     local res = db:query(sql_str)
+    if ret.badresult then
+        skynet.error('[db] login procedure errorno: ' .. ret.errno .. ', code:' .. ret.sqlstate)
+        return {errcode = errcode.code.DBSYNTAXERROR }
+    else
+        local resp = ret[1][1]
+        return resp
+    end
 end

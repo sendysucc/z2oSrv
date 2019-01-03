@@ -5,6 +5,7 @@ local sproto = require "sproto"
 local helper = require "helper"
 local snax = require "skynet.snax"
 local sprotoloader = require "sprotoloader"
+local errcode = require "errorcode"
 
 local fd = -1
 local sp_host
@@ -52,20 +53,20 @@ function REQUEST.exse(args,response)
     local tempsecret = crypt.dhsecret(clientkey, serverkey)
     local shmac = crypt.hmac64(challenge,tempsecret)
     if chmac == shmac then
-        send_package(response, {ret = 0} )
+        send_package(response, { ret = errcode.code.SUCCESS } )
         secret = tempsecret
     else
-        send_package(response, {ret = 1} )
+        send_package(response, {ret = errcode.code.HANDSHAKEFAIL } )
     end
 end
 
 function REQUEST.verifycode(args,response)
     if req_verify_time > 0 and (skynet.now() - req_verify_time ) < 100 * 120 then
-        send_package(response, {ret = 1})   --间隔时间太短,请120秒后在获取验证码
+        send_package(response, { ret = errcode.code.TOOOFTEN })   --间隔时间太短,请120秒后在获取验证码
     else
         req_verify_time = skynet.now()
         _vcode = genverifycode()
-        send_package(response, { ret = 0 , verifycode = _vcode })
+        send_package(response, { ret = errcode.code.SUCCESS , verifycode = _vcode })
     end
 end
 
@@ -76,10 +77,10 @@ end
 
 function REQUEST.register(args,response)
     if args.verifycode ~= _vcode then
-        send_package(response, {ret = 1})   --verifycode error
+        send_package(response, { ret = errcode.code.VERIFYMISS })   --verifycode error
     else
         local obj = snax.queryservice("login")
-        local retcode = 1
+        local retcode = errcode.code.OBJNOTEXISTS
         if obj then
             local ret = obj.req.register(args.cellphone, args.password, args.agentcode,args.promotecode)
             retcode = ret
@@ -92,10 +93,10 @@ function REQUEST.login(args,response)
     local obj = snax.queryservice("login")
     if obj then
         local ret = obj.req.login(args.cellphone, args.password)
-        send_package(response,{ret = 0, cellphone = args.cellphone, password = args.password , userid = 10010, 
-                                                    username = "z玩家10010", gold = 100, diamond = 10, avatorid = 8 })
+        send_package(response,{ret = ret.errcode , cellphone = ret.cellphone, password = ret.password , userid = ret.userid, 
+                                                    username = ret.username , nickname = ret.nickname, gold = ret.gold, diamond = ret.diamond, avatorid = ret.avatorid , gender = ret.gender })
     else
-        send_package(response,{ret = 1})
+        send_package(response,{ret = errcode.code.DBSYNTAXERROR})
     end
 end
 
@@ -118,6 +119,7 @@ function accept.rawmessage(fd,msg,sz)
 
     local type,name,args, response = sp_host:dispatch(msg,sz)
     if type == 'REQUEST' then
+        print('------>name: ' .. name)
         local f = assert(REQUEST[name])
         f(args,response)
     else

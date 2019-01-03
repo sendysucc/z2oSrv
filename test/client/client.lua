@@ -167,7 +167,9 @@ local rets = receive_data()
 print('---------register -----------')
 print(rets.ret)
 
-send_request("login", {cellphone="09566014786", password="sendysucc"})
+send_request("login", {cellphone="09566014768", password="sendysucc"})
 local rets = receive_data()
 print('--------- login -------------')
-print(rets.ret,rets.cellphone,rets.password)
+for k,v in pairs(rets) do
+	print(k,v)
+end

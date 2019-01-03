@@ -62,9 +62,11 @@ login 6 {
         password 2 : string
         userid 3 : integer
         username 4 : string
-        gold 5 : integer
-        diamond 6 : integer
-        avatorid 7 : integer
+        nickname 5 : string
+        gold 6 : integer
+        diamond 7 : integer
+        avatorid 8 : integer
+        gender 9 : integer
     }
 }
 

@@ -21,24 +21,24 @@ label_reg:begin
     set o_maxuserid = 0;
 
     select agentid into o_agentid from Agent where Agent.agentid = agentcode;
-    if o_agentid <=> 0 then
+    if ifnull(o_agentid,0) <=> 0 then
         select agentid into o_agentid from Agent where Agent.aigentid = 1;
     end if;
 
     select promoteid into o_promoteid from Promote where Promote.code = promotecode;
-    if o_promoteid <=> 0 then
+    if ifnull(o_promoteid,0) <=> 0 then
         select promoteid into o_promoteid from Promote where Promote.promoteid = 1;
     end if;
 
     if length(passwd) != 40 then
-        set errcode = 1;    #password error.
+        set errcode = 5;    #password error.
         select errcode as 'errcode';
         leave label_reg;
     end if;
 
     select userid into o_userid from User where User.cellphone = cellphone;
-    if o_userid != 0 then
-        set errcode = 2;  #user already exists
+    if ifnull(o_userid,0) != 0 then
+        set errcode = 6;  #user already exists
         select errcode as 'errcode';
         leave label_reg;
     end if;
@@ -49,13 +49,10 @@ label_reg:begin
     end if;
 
     set o_newuserid = o_maxuserid + 1;
-
     select concat('z2o玩家',o_newuserid) into o_nickname;
 
-    select o_nickname, o_maxuserid,o_newuserid;
-
-    insert into User(userid,username,nickname,gender,cellphone,password,createtime,disable,agentid,promoteid) 
-        value( o_newuserid ,cellphone, o_nickname , 1,cellphone, passwd, now(), false, o_agentid, o_promoteid );
+    insert into User(userid,username,nickname , avatoridx, gender,cellphone,password, gold, diamond,createtime,disable,agentid,promoteid) 
+        value( o_newuserid ,cellphone, o_nickname, 1 , 1,cellphone, passwd, 0 , 0, now(), false, o_agentid, o_promoteid );
 
     select errcode as 'errcode';
 end
