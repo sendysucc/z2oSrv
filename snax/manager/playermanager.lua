@@ -42,5 +42,14 @@ function response.logincheck(cellphone)
 end
 
 function accept.breakline()
-    
+
+end
+
+function accept.attachagent(userid,handle)
+    print('---------->[playermanager] attachagent , userid :' .. userid .. ' handle:' .. handle)
+    if not ONLINES[userid] then
+        skynet.error("user not online , userid:" .. tostring(userid))
+        return 
+    end
+    ONLINES[userid].agent = handle
 end

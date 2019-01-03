@@ -24,11 +24,9 @@ local function send_package(response,data)
         return 
     end
     local pack = response(data)
-
     if secret then
         pack =  crypt.base64encode(crypt.desencode(secret,pack))
     end
-
 	local package = string.pack(">s2", pack)
 	socket.write(fd, package)
 end
@@ -93,10 +91,17 @@ function REQUEST.login(args,response)
     local obj = snax.queryservice("login")
     if obj then
         local ret = obj.req.login(args.cellphone, args.password)
+
+        if ret.errcode == errcode.code.SUCCESS then
+            local pmobj = snax.queryservice("playermanager")
+            if pmobj then
+                pmobj.post.attachagent(ret.userid,snax.self().handle)
+            end
+        end
         send_package(response,{ret = ret.errcode , cellphone = ret.cellphone, password = ret.password , userid = ret.userid, 
                                                     username = ret.username , nickname = ret.nickname, gold = ret.gold, diamond = ret.diamond, avatorid = ret.avatorid , gender = ret.gender })
     else
-        send_package(response,{ret = errcode.code.DBSYNTAXERROR})
+        send_package(response,{ret = errcode.code.OBJNOTEXISTS})
     end
 end
 
