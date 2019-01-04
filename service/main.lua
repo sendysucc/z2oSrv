@@ -20,7 +20,7 @@ skynet.start(function()
     snax.uniqueservice("login")
     
     -- start gate
-    local gate = skynet.newservice("gated")
+    local gate = skynet.uniqueservice("gated")
     skynet.send(gate,'lua','open', {
         port = 12288,   -- (1024*12)
         maxclient = 10240, --(1024*10)

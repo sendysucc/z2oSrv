@@ -24,32 +24,42 @@ function init(...)
     skynet.error('------> start playermanager service')
 end
 
-function accept.adduser(userinfo)
+function response.adduser(userinfo,agenthandle)
     local userid = userinfo.userid
     if ONLINES[userid] then
         skynet.error('user :' .. userinfo.userid .. ' already logined ')
-        return
+        return errcode.code.ALREADLOGINED
     end
     if BREAKLINES[userid] then
         skynet.error('user : ' .. userinfo.userid ..  ' has breakline ')
-        return
+        return errcode.code.RECONNECT, BREAKLINES[userid]
     end
     ONLINES[userid] = userinfo
+    ONLINES[userid].agenthandle = agenthandle
+    return errcode.code.SUCCESS
 end
 
-function response.logincheck(cellphone)
+function accept.breakline(agenthandle)
+    for k,v in pairs(ONLINES) do
+        if v.agenthandle == agenthandle then
+            if v.gaming then
+                v.agenthandle = nil
+                BREAKLINES[v.userid] = v
+            end
+            ONLINES[v.userid] = nil
 
-end
+            print('----------->clear user :' .. v.userid)
 
-function accept.breakline()
-
-end
-
-function accept.attachagent(userid,handle)
-    print('---------->[playermanager] attachagent , userid :' .. userid .. ' handle:' .. handle)
-    if not ONLINES[userid] then
-        skynet.error("user not online , userid:" .. tostring(userid))
-        return 
+            break
+        end
     end
-    ONLINES[userid].agent = handle
+end
+
+function accept.clearuser(userid)
+    if ONLINES[userid] then
+        ONLINES[userid] = nil
+    end
+    if BREAKLINES[userid] then
+        BREAKLINES[userid] = nil
+    end
 end

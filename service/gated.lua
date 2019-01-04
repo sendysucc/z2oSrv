@@ -22,7 +22,6 @@ local function close_fd(fd)
 end
 
 local function close_client(fd)
-    close_fd(fd)
     gateserver.closeclient(fd)
 end
 
@@ -73,16 +72,20 @@ function handler.disconnect(fd)
     if agent then
         agent.post.disconnect()
     end
+    close_fd(fd)
 end
 
 --client socket error
 function handler.error(fd,msg)
-
+    skynet.error('[gated] socket error ' .. fd .. ' :' .. tostring(msg))
+    close_client(fd)
 end
 
 --client send message too large
 function handler.warning(fd,size)
 
+    skynet.error('[gated] too large message ' .. fd .. size)
+    close_client(fd)
 end
 
 function handler.command(cmd,source,...)

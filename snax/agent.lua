@@ -68,11 +68,6 @@ function REQUEST.verifycode(args,response)
     end
 end
 
--- function REQUEST.sayhello(args,response)
---     print('------->sayhello , msg: ' .. args.msg)
---     send_package(response,{msg=args.msg})
--- end
-
 function REQUEST.register(args,response)
     if args.verifycode ~= _vcode then
         send_package(response, { ret = errcode.code.VERIFYMISS })   --verifycode error
@@ -90,14 +85,7 @@ end
 function REQUEST.login(args,response)
     local obj = snax.queryservice("login")
     if obj then
-        local ret = obj.req.login(args.cellphone, args.password)
-
-        if ret.errcode == errcode.code.SUCCESS then
-            local pmobj = snax.queryservice("playermanager")
-            if pmobj then
-                pmobj.post.attachagent(ret.userid,snax.self().handle)
-            end
-        end
+        local ret = obj.req.login(args.cellphone, args.password, snax.self().handle)
         send_package(response,{ret = ret.errcode , cellphone = ret.cellphone, password = ret.password , userid = ret.userid, 
                                                     username = ret.username , nickname = ret.nickname, gold = ret.gold, diamond = ret.diamond, avatorid = ret.avatorid , gender = ret.gender })
     else
@@ -125,6 +113,15 @@ function accept.rawmessage(fd,msg,sz)
     local type,name,args, response = sp_host:dispatch(msg,sz)
     if type == 'REQUEST' then
         print('------>name: ' .. name)
+
+        if name ~= 'handshake' and name ~= 'exeys' and name ~= 'exse' then
+            if not secret then
+                local handle = skynet.queryservice('gated')
+                skynet.send(handle,'lua','kick',fd)
+                snax.exit()
+            end
+        end
+
         local f = assert(REQUEST[name])
         f(args,response)
     else
@@ -133,5 +130,9 @@ function accept.rawmessage(fd,msg,sz)
 end
 
 function accept.disconnect()
+    local obj = snax.queryservice("playermanager")
+    if obj then
+        obj.post.breakline(snax.self().handle)
+    end
     snax.exit()
 end

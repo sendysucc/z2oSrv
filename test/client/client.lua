@@ -146,10 +146,6 @@ end
 print('-------->return : ', rets.ret)
 
 
--- send_request("sayhello",{msg = "hello , after secret encode"})
--- local rets = receive_data()
--- print(rets.msg)
-
 send_request("verifycode",{agentcode = 10001})
 
 local rets = receive_data()
@@ -173,3 +169,9 @@ print('--------- login -------------')
 for k,v in pairs(rets) do
 	print(k,v)
 end
+
+if rets.ret ~= 0 then
+	print('------> login failed')
+	os.exit()
+end
+
