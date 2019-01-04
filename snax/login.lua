@@ -45,3 +45,9 @@ function response.login(cellphone, password,agenthandle)
     end
 end
 
+function response.logout(userid)
+    local pmobj = snax.queryservice("playermanager")
+    if pmobj then
+        local ret = pmobj.logout(userid)
+    end
+end

@@ -70,6 +70,15 @@ login 6 {
     }
 }
 
+logout 7 {
+    request {
+        userid 0 : integer
+    }
+    response {
+        ret 0 : integer
+    }
+}
+
 .gameitem {
     gameid 0 : integer
     gamename 1 : string
@@ -84,13 +93,13 @@ login 6 {
     onlines 5 : integer
 }
 
-gamelist 7 {
+gamelist 8 {
     response {
         games 0 : *gameitem
     }
 }
 
-roomlist 8 {
+roomlist 9 {
     request {
         gameid 0 : integer
     }

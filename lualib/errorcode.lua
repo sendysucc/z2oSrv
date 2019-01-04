@@ -1,6 +1,5 @@
 local errors = {}
 
--- errors.code = {
 errors.code = {
     SUCCESS = 0,
     HANDSHAKEFAIL = 1,
@@ -16,6 +15,7 @@ errors.code = {
     ALREADLOGINED = 11,
     RECONNECT = 12,
     FAILED = 13,
+    CANTQUITINNGAME = 14,
 
 }
 
@@ -34,6 +34,7 @@ errors.msg = {
     [errors.code.ALREADLOGINED] = '已登录',
     [errors.code.RECONNECT] = '断线重连',
     [errors.code.FAILED] = '操作失败',
+    [errors.code.CANTQUITINNGAME] = '正在游戏中无法退出',
 
 }
 

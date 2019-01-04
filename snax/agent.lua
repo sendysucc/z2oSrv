@@ -93,6 +93,14 @@ function REQUEST.login(args,response)
     end
 end
 
+function REQUEST.logout(userid)
+    local obj = snax.queryservice("login")
+    if obj then
+        local ret = obj.req.logout(userid)
+        
+    end
+end
+
 function REQUEST.gamelist()
 
 end

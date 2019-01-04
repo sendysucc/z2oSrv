@@ -47,9 +47,7 @@ function accept.breakline(agenthandle)
                 BREAKLINES[v.userid] = v
             end
             ONLINES[v.userid] = nil
-
             print('----------->clear user :' .. v.userid)
-
             break
         end
     end
@@ -62,4 +60,8 @@ function accept.clearuser(userid)
     if BREAKLINES[userid] then
         BREAKLINES[userid] = nil
     end
+end
+
+function response.logou(userid)
+
 end
