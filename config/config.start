@@ -10,7 +10,7 @@ lua_path = skynetroot .. "lualib/?.lua;" .. skynetroot .. "lualib/?/init.lua;" .
 lua_cpath = skynetroot .. "luaclib/?.so"    --for require path
 cpath = skynetroot .. "cservice/?.so"
 
-snax = root .. "snax/?.lua;" .. root .. "snax/manager/?.lua;"
+snax = root .. "snax/?.lua;" .. root .. "snax/manager/?.lua;" .. root .. "snax/game/?/?.lua;"
 
 start = "main"
 bootstrap = "snlua bootstrap"

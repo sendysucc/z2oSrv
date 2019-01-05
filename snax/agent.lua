@@ -109,6 +109,13 @@ function REQUEST.gamelist(args,response)
     end
 end
 
+function REQUEST.joingame(args,response)
+    local gmobj = snax.queryservice("gamemanager")
+    if gmobj then
+        local ret = gmobj.req.joingame(args.gameid, args.roomid)
+    end
+end
+
 function init(...)
     fd = ...
     -- sp_host = sproto.new(helper.getprotobin("./proto/c2s.spt")):host("package")
