@@ -3,7 +3,7 @@ local snax = require "skynet.snax"
 
 skynet.start(function()
     -- start debug console
-    skynet.newservice("debug_console",30000)
+    skynet.newservice("debug_console",30001)
     skynet.uniqueservice("protoloader")
 
     --start database manager

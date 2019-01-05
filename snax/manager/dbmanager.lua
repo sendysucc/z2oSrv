@@ -98,13 +98,25 @@ function response.login(cellphone,password)
 end
 
 function response.gamelist()
-    local sql_str = 'select * from game where enable = 1;'
-    local res = db:query(sql_str)
+    local sql_str = 'select * from Game where enable = 1;'
+    local ret = db:query(sql_str)
+
     if ret.badresult then
         skynet.error('[db] login procedure errorno: ' .. ret.errno .. ', code:' .. ret.sqlstate)
         return {errcode = errcode.code.DBSYNTAXERROR }
     else
-        local resp = ret[1][1]
-        return resp
+        return ret
     end
 end
+
+function response.roomlist()
+    local sql_str = 'select * from GameRoom;'
+    local ret = db:query(sql_str)
+
+    if ret.badresult then
+        skynet.error('[db] login procedure errorno: ' .. ret.errno .. ', code:' .. ret.sqlstate)
+        return {errcode = errcode.code.DBSYNTAXERROR }
+    else
+        return ret
+    end
+end 

@@ -175,3 +175,16 @@ if rets.ret ~= 0 then
 	os.exit()
 end
 
+send_request("gamelist")
+local res = receive_data()
+print('------------gamelist--------------')
+for k,v in pairs(res.games) do
+	for _k,_v in pairs(v.rooms) do
+		for p,q in pairs(_v) do
+			print(p,q)
+		end
+	end
+end
+
+
+

@@ -4,7 +4,6 @@ local gateserver = require "snax.gateserver"
 local manager = require "z2omanager"
 local code = require "retcodes"
 
-
 local connection = {}
 local handler = {}
 local CMD = {}
@@ -90,7 +89,7 @@ end
 
 function handler.command(cmd,source,...)
     local f = assert(CMD[cmd])
-    return f(source,...)
+    return f(source,fd,...)
 end
 
 function CMD.forward(source,fd,address,snaxname)
@@ -102,6 +101,17 @@ end
 
 function CMD.kick(source,fd)
     close_client(fd)
+end
+
+function CMD.updategame(source,fd)
+    local gmobj = snax.queryservice('gamemanager')
+    if gmobj then
+        gmobj.post.updategame()
+    end
+end
+
+function CMD.loadfile(source,fd,filename)
+    loadfile(filename)
 end
 
 gateserver.start(handler)

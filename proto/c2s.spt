@@ -79,18 +79,23 @@ logout 7 {
     }
 }
 
-.gameitem {
-    gameid 0 : integer
-    gamename 1 : string
-}
-
 .roomitem {
     gameid 0 : integer
     roomid 1 : integer
-    minentry 2 : integer
-    maxentry 3 : integer
-    roomname 4 : string
-    onlines 5 : integer
+    name 2 : string
+    minentry 3 : integer
+    maxentry 4 : integer
+    enable 5 : integer
+    onlines 6 : integer
+}
+
+.gameitem {
+    gameid 0 : integer
+    name 1 : string
+    minplayers 2 : integer
+    maxplayers 3 : integer
+    enable 4 : integer
+    rooms 5 : *roomitem
 }
 
 gamelist 8 {
@@ -99,12 +104,12 @@ gamelist 8 {
     }
 }
 
-roomlist 9 {
+joingame 9 {
     request {
         gameid 0 : integer
+        roomid 1 : integer
     }
-
     response {
-        rooms 0 : *roomitem
+        
     }
 }

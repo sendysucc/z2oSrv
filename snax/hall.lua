@@ -6,11 +6,15 @@ function init(...)
     
 end
 
-function response.rawmessage(fd,msg,sz)
-    
+function response.gamelist()
+    local gmobj = snax.queryservice('gamemanager')
+    if gmobj then
+        local ret = gmobj.req.gamelist()
+
+        local resp = {}
+        for k,v in pairs(ret) do
+            table.insert(resp,v)
+        end
+        return {games = resp}
+    end
 end
-
-function response.message(type,name,msg,response)
-
-end
-

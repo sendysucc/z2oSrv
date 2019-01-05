@@ -101,8 +101,12 @@ function REQUEST.logout(userid)
     end
 end
 
-function REQUEST.gamelist()
-
+function REQUEST.gamelist(args,response)
+    local hobj = snax.queryservice("hall")
+    if hobj then
+        local gamelist = hobj.req.gamelist()
+        send_package(response, gamelist)
+    end
 end
 
 function init(...)
@@ -121,7 +125,6 @@ function accept.rawmessage(fd,msg,sz)
     local type,name,args, response = sp_host:dispatch(msg,sz)
     if type == 'REQUEST' then
         print('------>name: ' .. name)
-
         if name ~= 'handshake' and name ~= 'exeys' and name ~= 'exse' then
             if not secret then
                 local handle = skynet.queryservice('gated')
