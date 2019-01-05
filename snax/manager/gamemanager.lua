@@ -1,20 +1,22 @@
 local skynet = require "skynet"
 local snax = require "skynet.snax"
 
-local GAMES = {}
+local GAMES
 
 local function update()
-    GAMES = {}
+    local tmpGAMES = {}
+
     local dbobj = snax.queryservice('dbmanager')
     local games = dbobj.req.gamelist()
     for k,v in pairs(games) do
-        GAMES[v.gameid] = v
-        GAMES[v.gameid].rooms = GAMES[v.gameid].rooms or {}
+        tmpGAMES[v.gameid] = v
+        tmpGAMES[v.gameid].rooms = tmpGAMES[v.gameid].rooms or {}
     end
     local rooms = dbobj.req.roomlist()
     for k,v in pairs(rooms) do
-        table.insert(GAMES[v.gameid].rooms, v)
+        table.insert(tmpGAMES[v.gameid].rooms, v)
     end
+    GAMES = tmpGAMES
 end
 
 function init(...)
