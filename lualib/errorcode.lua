@@ -17,7 +17,6 @@ errors.code = {
     FAILED = 13,
     CANTQUITINNGAME = 14,
     ILLEGALREQUEST = 15,
-
 }
 
 errors.msg = {
@@ -37,8 +36,6 @@ errors.msg = {
     [errors.code.FAILED] = '操作失败',
     [errors.code.CANTQUITINNGAME] = '正在游戏中无法退出',
     [errors.code.ILLEGALREQUEST] = '非法请求',
-
 }
-
 
 return errors

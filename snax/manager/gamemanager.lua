@@ -3,8 +3,11 @@ local snax = require "skynet.snax"
 
 local GAMES
 local GSERVICES = {}
+local alloc_co          --创建 game service 的协程
+local queue = {}
 
-local function update()
+
+local function updategame()
     local tmpGAMES = {}
     local tempGSERVICES = {}
     local dbobj = snax.queryservice('dbmanager')
@@ -17,6 +20,7 @@ local function update()
     local rooms = dbobj.req.roomlist()
     for k,v in pairs(rooms) do
         table.insert(tmpGAMES[v.gameid].rooms, v)
+        tempGSERVICES[v.gameid][v.roomid] =  {}
     end
     GAMES = tmpGAMES
 
@@ -36,13 +40,32 @@ local function update()
     end
 end
 
+local function allocgameservice()
+    if #queue <= 0 then
+        print('----------allocgameservice sleeping')
+        skynet.wait()
+    end
+    
+    print('allocgameservice : ------alloc gameservice' )
+
+end
+
 function init(...)
     skynet.error('---------> start gamemanager service')
-    update()
+    updategame()
+
+    --game service 创建协程
+    skynet.fork(function() 
+        alloc_co = coroutine.running()
+        while true do
+            allocgameservice()
+        end
+    end)
+
 end
 
 function accept.updategame()
-    update()
+    updategame()
 end
 
 function response.gamelist()
@@ -50,8 +73,12 @@ function response.gamelist()
 end
 
 function response.joingame(gameid,roomid)
-    local gobj = snax.newservice('20001')
-    
+    -- local obj = snax.newservice('qznn')
+    -- table.insert(GSERVICES[gameid][roomid], obj)
+
+    if coroutine.running() ~= alloc_co then
+        skynet.wakeup(alloc_co)
+    end
 end
 
 

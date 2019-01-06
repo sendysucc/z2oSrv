@@ -186,5 +186,13 @@ for k,v in pairs(res.games) do
 	end
 end
 
+local _gameid = res.games[1].gameid
+local _roomid = res.games[1].rooms[1].roomid
+
+print('------>gameid:',_gameid, '--roomid:',_roomid)
+send_request("joingame",{gameid = _gameid, roomid = _roomid })
+local res = receive_data()
+
+
 
 

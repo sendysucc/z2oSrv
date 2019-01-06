@@ -1,17 +1,14 @@
 root = "./"
-
 skynetroot = "./skynet/"
-
 thread = 8
-
 luaservice = skynetroot .. "/service/?.lua;" .. root .. "./service/?.lua;" 
 lualoader = skynetroot .. "lualib/loader.lua"
-lua_path = skynetroot .. "lualib/?.lua;" .. skynetroot .. "lualib/?/init.lua;" .. root .. "lualib/?.lua;" .. skynetroot .. "lualib/skynet/?.lua;"
+gamepath = root .. 'snax/game/qznn/?.lua;'
+lua_path = skynetroot .. "lualib/?.lua;" .. skynetroot .. "lualib/?/init.lua;" .. root .. "lualib/?.lua;" .. skynetroot .. "lualib/skynet/?.lua;"  .. gamepath
 lua_cpath = skynetroot .. "luaclib/?.so"    --for require path
 cpath = skynetroot .. "cservice/?.so"
-
-snax = root .. "snax/?.lua;" .. root .. "snax/manager/?.lua;" .. root .. "snax/game/?/?.lua;"
-
+gamesnax = root .. 'snax/game/?/?.lua;'
+snax = root .. "snax/?.lua;" .. root .. "snax/manager/?.lua;" .. gamesnax
 start = "main"
 bootstrap = "snlua bootstrap"
 harbor = 0

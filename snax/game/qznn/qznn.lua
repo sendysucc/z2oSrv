@@ -1,7 +1,10 @@
 local skynet = require "skynet"
 local snax = require "skynet.snax"
 
+local logic = require "qznnlogic"
+
 function init(...)
-    skynet.error('start game 20001')
+
+    logic.hello()
 end
 

@@ -10,4 +10,9 @@ function helper.getprotobin(filename)
     return parser.parse(data)
 end
 
+function helper.getcurpath(source)
+    local path = string.sub(source,2,-1)
+    return string.match(path,"^.*/")
+end
+
 return helper
