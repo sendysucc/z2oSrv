@@ -5,6 +5,7 @@ local GAMES
 local GSERVICES = {}
 local alloc_co          --创建 game service 的协程
 local queue = {}
+local userid_co = {}
 
 
 local function updategame()
@@ -72,11 +73,13 @@ function response.gamelist()
     return GAMES
 end
 
-function response.joingame(gameid,roomid)
+function response.joingame(userid,gameid,roomid)
     -- local obj = snax.newservice('qznn')
     -- table.insert(GSERVICES[gameid][roomid], obj)
-
-    if coroutine.running() ~= alloc_co then
+    local running_co = coroutine.running()
+    userid_co[userid] = running_co
+    
+    if running_co ~= alloc_co then
         skynet.wakeup(alloc_co)
     end
 end

@@ -14,6 +14,7 @@ local clientkey
 local serverkey
 local challenge
 local secret 
+local userid
 
 local req_verify_time = 0   --请求验证码的时间
 local _vcode                --验证码
@@ -88,6 +89,9 @@ function REQUEST.login(args,response)
         local ret = obj.req.login(args.cellphone, args.password, snax.self().handle)
         send_package(response,{ret = ret.errcode , cellphone = ret.cellphone, password = ret.password , userid = ret.userid, 
                                                     username = ret.username , nickname = ret.nickname, gold = ret.gold, diamond = ret.diamond, avatorid = ret.avatorid , gender = ret.gender })
+        if ret.errcode == errcode.code.SUCCESS then
+            userid = ret.userid
+        end
     else
         send_package(response,{ret = errcode.code.OBJNOTEXISTS})
     end
@@ -110,9 +114,9 @@ function REQUEST.gamelist(args,response)
 end
 
 function REQUEST.joingame(args,response)
-    local gmobj = snax.queryservice("gamemanager")
-    if gmobj then
-        local ret = gmobj.req.joingame(args.gameid, args.roomid)
+    local pmobj = snax.queryservice("playermanager")
+    if pmobj then
+        local ret = pmobj.req.joingame(userid,args.gameid, args.roomid)
     end
 end
 

@@ -20,10 +20,18 @@ local BREAKLINES = {}
     createtime
 ]]
 
+local userid_co = {}
+
 function init(...)
     skynet.error('------> start playermanager service')
 end
 
+--[[
+    为啥 PlayerManager 中需要在用户信息中保存 agent handle?
+
+    由于socket断开等消息是由agent来处理的 , 所以当用户断线时 , 需要通知PlayerManager
+    让PlayerManager知道用户已经断线了.
+]]
 function response.adduser(userinfo,agenthandle)
     local userid = userinfo.userid
     if ONLINES[userid] then
@@ -62,6 +70,13 @@ function accept.clearuser(userid)
     end
 end
 
-function response.logou(userid)
+function response.logout(userid)
 
+end
+
+function response.joingame(userid,gameid,roomid)
+    local gmobj = snax.queryservice('gamemanager')
+    local ret = gmobj.req.joingame(userid,gameid,roomid)
+
+    
 end
