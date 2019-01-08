@@ -13,6 +13,7 @@ function init(...)
 end
 
 function response.register(cellphone, password, agentcode,promotecode)
+    print('------------->register: ', response)
     local obj = snax.queryservice("dbmanager")
     if obj then
         password = sha1(password)

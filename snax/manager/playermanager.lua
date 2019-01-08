@@ -74,9 +74,13 @@ function response.logout(userid)
 
 end
 
-function response.joingame(userid,gameid,roomid)
-    local gmobj = snax.queryservice('gamemanager')
-    local ret = gmobj.req.joingame(userid,gameid,roomid)
+function accept.matched(userid,infos)
+    local agenthandle = ONLINES[userid].agenthandle
+    local aobj = snax.bind(agenthandle,'agent')
+    aobj.post.matched(infos)
+end
 
-    
+function accept.joingame(userid,gameid,roomid)
+    local gmobj = snax.queryservice('gamemanager')
+    local ret = gmobj.post.joingame(userid,gameid,roomid)
 end

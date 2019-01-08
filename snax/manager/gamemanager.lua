@@ -8,6 +8,7 @@ local queue = {}
 local userid_co = {}
 
 
+--从数据库更新游戏列表
 local function updategame()
     local tmpGAMES = {}
     local tempGSERVICES = {}
@@ -42,19 +43,11 @@ local function updategame()
 end
 
 local function allocgameservice()
-    if #queue <= 0 then
-        print('----------allocgameservice sleeping')
-        skynet.wait()
-    end
     
-    print('allocgameservice : ------alloc gameservice' )
-
 end
 
 function init(...)
-    skynet.error('---------> start gamemanager service')
     updategame()
-
     --game service 创建协程
     skynet.fork(function() 
         alloc_co = coroutine.running()
@@ -62,7 +55,6 @@ function init(...)
             allocgameservice()
         end
     end)
-
 end
 
 function accept.updategame()
@@ -73,15 +65,6 @@ function response.gamelist()
     return GAMES
 end
 
-function response.joingame(userid,gameid,roomid)
-    -- local obj = snax.newservice('qznn')
-    -- table.insert(GSERVICES[gameid][roomid], obj)
-    local running_co = coroutine.running()
-    userid_co[userid] = running_co
+function accept.joingame(userid,gameid,roomid)
     
-    if running_co ~= alloc_co then
-        skynet.wakeup(alloc_co)
-    end
 end
-
-

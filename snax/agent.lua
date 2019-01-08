@@ -19,6 +19,8 @@ local userid
 local req_verify_time = 0   --请求验证码的时间
 local _vcode                --验证码
 local REQUEST = {}
+local current_co 
+local game_matched
 
 local function send_package(response,data)
     if not response then
@@ -116,14 +118,24 @@ end
 function REQUEST.joingame(args,response)
     local pmobj = snax.queryservice("playermanager")
     if pmobj then
-        local ret = pmobj.req.joingame(userid,args.gameid, args.roomid)
+        current_co = coroutine.running()
+        --将加入游戏请求抛给 playermanager ,然后挂起当前协成, 等待收到匹配结果后,唤醒当前协成,并响应客户端的请求
+        local ret = pmobj.post.joingame(userid,args.gameid, args.roomid)
+        skynet.wait()
+    
+        --todo: response to client
+
+        
     end
+end
+
+function accept.matched(match_info)
+    game_matched = match_info
+    skynet.wakeup(current_co)
 end
 
 function init(...)
     fd = ...
-    -- sp_host = sproto.new(helper.getprotobin("./proto/c2s.spt")):host("package")
-    -- sp_request = sp_host:attach(sproto.new(helper.getprotobin("./proto/s2c.spt")))
     sp_host = sprotoloader.load(1):host "package"
     sp_request = sp_host:attach(sprotoloader.load(2))
 end
@@ -135,7 +147,6 @@ function accept.rawmessage(fd,msg,sz)
 
     local type,name,args, response = sp_host:dispatch(msg,sz)
     if type == 'REQUEST' then
-        print('------>name: ' .. name)
         if name ~= 'handshake' and name ~= 'exeys' and name ~= 'exse' then
             if not secret then
                 local handle = skynet.queryservice('gated')
