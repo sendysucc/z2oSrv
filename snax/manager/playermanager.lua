@@ -83,10 +83,9 @@ function accept.joingame(userid,gameid,roomid)
     local ret = snax.queryservice('gamemanager').post.joingame(userid,gameid,roomid)
 end
 
-function response.playeragent(userid)
+function response.getagent(userid)
     if not ONLINES[userid] then
         return errcode.code.PLAYERNOTFOUND
     end
-
     return errcode.code.SUCCESS,ONLINES[userid].agenthandle
 end

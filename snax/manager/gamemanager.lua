@@ -1,5 +1,6 @@
 local skynet = require "skynet"
 local snax = require "skynet.snax"
+local errcode = require "errorcode"
 
 local GAMES
 local GSERVICES = {}
@@ -43,7 +44,16 @@ local function updategame()
 end
 
 local function allocgameservice()
-    
+--    skynet.sleep(100 * 20) 
+
+   for i = 0 , 20 do
+        skynet.error('------>[gamemanager] sleep :' .. i )
+        skynet.sleep(100)
+   end
+
+   snax.queryservice('hall').post.matched(10001,{ msg = 'game matched' })
+
+   return errcode.code.SUCCESS
 end
 
 function init(...)
@@ -52,7 +62,9 @@ function init(...)
     skynet.fork(function() 
         alloc_co = coroutine.running()
         while true do
-            allocgameservice()
+            if allocgameservice() == errcode.code.SUCCESS then
+                break
+            end
         end
     end)
 end
@@ -65,6 +77,6 @@ function response.gamelist()
     return GAMES
 end
 
-function accept.joingame(userid,gameid,roomid)
+function accept.match(userid,gameid,roomid)
     
 end

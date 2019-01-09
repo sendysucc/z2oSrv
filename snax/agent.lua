@@ -89,7 +89,6 @@ function REQUEST.login(args,response)
     if ret.errcode == errcode.code.SUCCESS then
         userid = ret.userid
     end
-    
 end
 
 function REQUEST.logout(userid)
@@ -98,18 +97,21 @@ end
 
 function REQUEST.gamelist(args,response)
     local gamelist = snax.queryservice("hall").req.gamelist()
+    print('------> return gamelist', gamelist)
     send_package(response, gamelist)
 end
 
-function REQUEST.joingame(args,response)
-    current_co = coroutine.running()
-    --将加入游戏请求抛给 playermanager ,然后挂起当前协成, 等待收到匹配结果后,唤醒当前协成,并响应客户端的请求
-    local ret = snax.queryservice("playermanager").post.joingame(userid,args.gameid, args.roomid)
-    skynet.wait()
+function REQUEST.match(args,response)
+    -- 将加入游戏请求抛给 playermanager ,然后挂起当前协成, 等待收到匹配结果后,唤醒当前协成,并响应客户端的请求
+    -- local ret = snax.queryservice("playermanager").post.joingame(userid,args.gameid, args.roomid)
+    local matchedinfo = snax.queryservice('hall').req.match(userid,args.gameid,args.roomid)
     
+    print('-------->[agent] game matched ')
+    for k,v in pairs(matchedinfo) do
+        print('----->matched :', k,v)
+    end
     --todo: response to client
-
-        
+    send_package(response, matchedinfo )    
 end
 
 function accept.matched(match_info)
@@ -129,6 +131,7 @@ function accept.rawmessage(fd,msg,sz)
     end
 
     local type,name,args, response = sp_host:dispatch(msg,sz)
+    print('---->protocol :' ,name)
     if type == 'REQUEST' then
         if name ~= 'handshake' and name ~= 'exeys' and name ~= 'exse' then
             if not secret then
@@ -137,7 +140,6 @@ function accept.rawmessage(fd,msg,sz)
                 snax.exit()
             end
         end
-
         local f = assert(REQUEST[name])
         f(args,response)
     else

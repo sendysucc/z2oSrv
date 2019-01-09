@@ -48,13 +48,11 @@ function handler.connect(fd,addr)
     if obj then
         local result,msg = obj.req.filter(addr)
         if result == code.codes.SUCC then
-            skynet.error('----> success')
             local c = {
                 fd = fd,
                 ip = addr,
             }
             c.agent = snax.newservice("agent",fd)
-            print('------->handle of agent :' .. tostring(c.agent.handle))
             connection[fd] = c
             gateserver.openclient(fd)
         else
