@@ -92,10 +92,11 @@ logout 7 {
 .gameitem {
     gameid 0 : integer
     name 1 : string
-    minplayers 2 : integer
-    maxplayers 3 : integer
-    enable 4 : integer
-    rooms 5 : *roomitem
+    gametype 2 : integer
+    minplayers 3 : integer
+    maxplayers 4 : integer
+    enable 5 : integer
+    rooms 6 : *roomitem
 }
 
 gamelist 8 {

@@ -1,5 +1,5 @@
-root = "./"
-skynetroot = "./skynet/"
+root = './'
+skynetroot = './skynet/'
 thread = 8
 luaservice = skynetroot .. "/service/?.lua;" .. root .. "./service/?.lua;" 
 lualoader = skynetroot .. "lualib/loader.lua"

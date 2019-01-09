@@ -2,7 +2,8 @@ use z2osrv;
 
 insert into Agent(agentid,name,cellphone,createtime) value (1,'系统默认','09566014786',now());
 
-insert into Game(gameid,name,minplayers,maxplayers,enable) value (20001,'抢庄牛牛',2,6,true);
+insert into Game(gameid,name,gametype,minplayers,maxplayers,enable) value (20001,'抢庄牛牛',2,2,6,true);
+insert into Game(gameid,name,gametype,minplayers,maxplayers,enable) value (30001,'百家乐',1,1,100,true);
 
 insert into Promote(promoteid,code,name,detail,createtime) value(1,'sjda1001','系统默认','自身推广',now());
 

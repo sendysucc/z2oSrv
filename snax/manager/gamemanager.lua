@@ -44,16 +44,30 @@ local function updategame()
 end
 
 local function allocgameservice()
---    skynet.sleep(100 * 20) 
+    for gid, gqueue in pairs(queue) do
+        for rid, rqueue in pairs(gqueue) do
+            if #rqueue > 0 then
+                local game = GAMES[gid]
+                local minplayers = game.minplayers
+                local maxplayers = game.maxplayers
+                local gametype = game.gametype
 
-   for i = 0 , 20 do
+
+
+
+            end
+        end
+    end
+
+    skynet.sleep(100 * 3)
+
+    ------------------------------------------------
+    for i = 0 , 20 do
         skynet.error('------>[gamemanager] sleep :' .. i )
         skynet.sleep(100)
-   end
-
-   snax.queryservice('hall').post.matched(10001,{ msg = 'game matched' })
-
-   return errcode.code.SUCCESS
+    end
+    snax.queryservice('hall').post.matched(10001,{ msg = 'game matched' })
+    return errcode.code.SUCCESS
 end
 
 function init(...)
@@ -78,5 +92,7 @@ function response.gamelist()
 end
 
 function accept.match(userid,gameid,roomid)
-    
+    queue[gameid] = queue[gameid] or {}
+    queue[gameid][roomid] = queue[gameid][roomid] or {}
+    table.insert(queue[gameid][roomid],userid)
 end
