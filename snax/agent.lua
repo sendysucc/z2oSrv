@@ -75,58 +75,41 @@ function REQUEST.register(args,response)
     if args.verifycode ~= _vcode then
         send_package(response, { ret = errcode.code.VERIFYMISS })   --verifycode error
     else
-        local obj = snax.queryservice("login")
         local retcode = errcode.code.OBJNOTEXISTS
-        if obj then
-            local ret = obj.req.register(args.cellphone, args.password, args.agentcode,args.promotecode)
-            retcode = ret
-        end
+        local ret = snax.queryservice("login").req.register(args.cellphone, args.password, args.agentcode,args.promotecode)
+        retcode = ret
         send_package(response,{ret = retcode})
     end
 end
 
 function REQUEST.login(args,response)
-    local obj = snax.queryservice("login")
-    if obj then
-        local ret = obj.req.login(args.cellphone, args.password, snax.self().handle)
-        send_package(response,{ret = ret.errcode , cellphone = ret.cellphone, password = ret.password , userid = ret.userid, 
+    local ret = snax.queryservice("login").req.login(args.cellphone, args.password, snax.self().handle)
+    send_package(response,{ret = ret.errcode , cellphone = ret.cellphone, password = ret.password , userid = ret.userid, 
                                                     username = ret.username , nickname = ret.nickname, gold = ret.gold, diamond = ret.diamond, avatorid = ret.avatorid , gender = ret.gender })
-        if ret.errcode == errcode.code.SUCCESS then
-            userid = ret.userid
-        end
-    else
-        send_package(response,{ret = errcode.code.OBJNOTEXISTS})
+    if ret.errcode == errcode.code.SUCCESS then
+        userid = ret.userid
     end
+    
 end
 
 function REQUEST.logout(userid)
-    local obj = snax.queryservice("login")
-    if obj then
-        local ret = obj.req.logout(userid)
-        
-    end
+    local ret = snax.queryservice("login").req.logout(userid)
 end
 
 function REQUEST.gamelist(args,response)
-    local hobj = snax.queryservice("hall")
-    if hobj then
-        local gamelist = hobj.req.gamelist()
-        send_package(response, gamelist)
-    end
+    local gamelist = snax.queryservice("hall").req.gamelist()
+    send_package(response, gamelist)
 end
 
 function REQUEST.joingame(args,response)
-    local pmobj = snax.queryservice("playermanager")
-    if pmobj then
-        current_co = coroutine.running()
-        --将加入游戏请求抛给 playermanager ,然后挂起当前协成, 等待收到匹配结果后,唤醒当前协成,并响应客户端的请求
-        local ret = pmobj.post.joingame(userid,args.gameid, args.roomid)
-        skynet.wait()
+    current_co = coroutine.running()
+    --将加入游戏请求抛给 playermanager ,然后挂起当前协成, 等待收到匹配结果后,唤醒当前协成,并响应客户端的请求
+    local ret = snax.queryservice("playermanager").post.joingame(userid,args.gameid, args.roomid)
+    skynet.wait()
     
-        --todo: response to client
+    --todo: response to client
 
         
-    end
 end
 
 function accept.matched(match_info)
@@ -163,9 +146,6 @@ function accept.rawmessage(fd,msg,sz)
 end
 
 function accept.disconnect()
-    local obj = snax.queryservice("playermanager")
-    if obj then
-        obj.post.breakline(snax.self().handle)
-    end
+    snax.queryservice("playermanager").post.breakline(snax.self().handle)
     snax.exit()
 end

@@ -17,6 +17,7 @@ errors.code = {
     FAILED = 13,
     CANTQUITINNGAME = 14,
     ILLEGALREQUEST = 15,
+    PLAYERNOTFOUND = 16,
 }
 
 errors.msg = {
@@ -36,6 +37,7 @@ errors.msg = {
     [errors.code.FAILED] = '操作失败',
     [errors.code.CANTQUITINNGAME] = '正在游戏中无法退出',
     [errors.code.ILLEGALREQUEST] = '非法请求',
+    [errors.code.PLAYERNOTFOUND] = '玩家不存在,或者不在线',
 }
 
 return errors

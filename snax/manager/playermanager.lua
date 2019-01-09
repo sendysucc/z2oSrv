@@ -76,11 +76,17 @@ end
 
 function accept.matched(userid,infos)
     local agenthandle = ONLINES[userid].agenthandle
-    local aobj = snax.bind(agenthandle,'agent')
-    aobj.post.matched(infos)
+    snax.bind(agenthandle,'agent').post.matched(infos)
 end
 
 function accept.joingame(userid,gameid,roomid)
-    local gmobj = snax.queryservice('gamemanager')
-    local ret = gmobj.post.joingame(userid,gameid,roomid)
+    local ret = snax.queryservice('gamemanager').post.joingame(userid,gameid,roomid)
+end
+
+function response.playeragent(userid)
+    if not ONLINES[userid] then
+        return errcode.code.PLAYERNOTFOUND
+    end
+
+    return errcode.code.SUCCESS,ONLINES[userid].agenthandle
 end
