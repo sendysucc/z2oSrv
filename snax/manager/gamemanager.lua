@@ -44,20 +44,44 @@ local function updategame()
 end
 
 local function allocgameservice()
-    for gid, gqueue in pairs(queue) do
-        for rid, rqueue in pairs(gqueue) do
-            if #rqueue > 0 then
-                local game = GAMES[gid]
-                local minplayers = game.minplayers
-                local maxplayers = game.maxplayers
-                local gametype = game.gametype
+    -- for gid, gqueue in pairs(queue) do
+    --     for rid, rqueue in pairs(gqueue) do
+    --         if #rqueue > 0 then
+    --             for k, inst in pairs(GSERVICES[gid][rid] or {}) do
+    --                 local canjoin, needstart, leftcount = inst.req.canjoin()
+    --                 if canjoin == true then
+    --                     for i = 1, needstart do
+    --                         local userid = table.remove(rqueue,1)
+    --                         if not userid then
+    --                             break
+    --                         end
+    --                         inst.userjoin(userid)
+    --                     end
+    --                     for i = 1, leftcount - needstart do
+    --                         local userid = table.remove(rqueue,1)
+    --                         if not userid then
+    --                             break
+    --                         end
+    --                         inst.userjoin(userid)
+    --                     end
+    --                     local bstart, needs = inst.req.gamestart()
+    --                     if not bstart then  --增加机器人
+    --                         for i = 1, needs do
 
+    --                         end
+    --                     end
+    --                 end
+    --             end
 
+    --             -- 如果还有玩家没有分配,则需要创建新的游戏服务来分配玩家
+    --             if #rqueue > 0 then
 
+    --             end
 
-            end
-        end
-    end
+            
+    --         end
+    --     end
+    -- end
 
     skynet.sleep(100 * 3)
 

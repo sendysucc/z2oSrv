@@ -119,4 +119,16 @@ function response.roomlist()
     else
         return ret
     end
-end 
+end
+
+function response.loadrobots(startidx, count)
+    local sql_str = string.format('call proc_loadrobots(%d,%d);',startidx,count)
+    local ret = db:query(sql_str)
+    if ret.badresult then
+        skynet.error('[db] loadrobots errorno: ' .. ret.errno .. ', code:' .. ret.sqlstate)
+        return {errcode = errcode.code.DBSYNTAXERROR}
+    else
+        print('-------->loadrobots', #(ret[1]))
+        return ret[1]
+    end
+end

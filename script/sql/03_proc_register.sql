@@ -51,8 +51,8 @@ label_reg:begin
     set o_newuserid = o_maxuserid + 1;
     select concat('z2o玩家',o_newuserid) into o_nickname;
 
-    insert into User(userid,username,nickname , avatoridx, gender,cellphone,password, gold, diamond,createtime,disable,agentid,promoteid) 
-        value( o_newuserid ,cellphone, o_nickname, 1 , 1,cellphone, passwd, 0 , 0, now(), false, o_agentid, o_promoteid );
+    insert into User(userid,username,nickname , avatoridx, gender,cellphone,password, gold, diamond,createtime,disable,agentid,promoteid,isrobot) 
+        value( o_newuserid ,cellphone, o_nickname, 1 , 1,cellphone, passwd, 0 , 0, now(), false, o_agentid, o_promoteid, 0);
 
     select errcode as 'errcode';
 end
