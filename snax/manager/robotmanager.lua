@@ -18,7 +18,7 @@ function init(...)
     loadrobots()
 end
 
-function response.getarobot()
+function response.getrobot()
     if #idlerobots <= 0 then
         loadrobots()
     end

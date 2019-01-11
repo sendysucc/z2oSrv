@@ -1,11 +1,14 @@
 local skynet = require "skynet"
 local snax = require "skynet.snax"
 local logic = require "qznnlogic"
+local errcode = require "errorcode"
 
 local playing = false   --游戏是否开始
 local players = {}      --游戏中的玩家
 local minplayer = 0     --游戏最小人数
 local maxplayer = 0     --游戏最大人数
+local minentry = 0      --最小准入
+local maxentry = 0      --最大准入
 local gametype          --百人类, 对战类...
 local bets = {}         --下注记录
 
@@ -17,24 +20,31 @@ end
 --游戏开始
 function response.gamestart()
     if #players < minplayer then
-        return false, minplayer - #players
+        return errcode.code.LESSTOSTART, (minplayer - #players)
     end
-
     --start game
 
-
-    return true, 0
+    return errcode.code.SUCCESS , 0
 end
 
 --用户加入
 function response.userjoin(userid)
     if #players >= maxplayer then
-        return false
-    else
-        local count = #players
-        players[count + 1] = userid
-        return true
+        return error.code.PLAYERFULL
     end
+
+    local succ,gold = snax.queryservice('playermanager').req.getgoldbyId(userid)
+    if succ ~= errcode.code.SUCCESS then
+        return succ
+    end
+
+    if (gold or 0) < minentry then
+        return errcode.code.LESSMINENTRY
+    end
+
+    local count = #players
+    players[count + 1] = userid
+    return errcode.code.SUCCESS
 end
 
 function response.isplaying()
@@ -52,9 +62,9 @@ function response.canjoin()
         if need < 0 then
             need = 0
         end
-        return true , need , (maxplayer - #players)
+        return errcode.code.SUCCESS , need , (maxplayer - #players)
     else
-        return false , 0
+        return errcode.code.CANTJOINGAME , 0
     end
 end
 

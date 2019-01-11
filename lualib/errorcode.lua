@@ -18,6 +18,11 @@ errors.code = {
     CANTQUITINNGAME = 14,
     ILLEGALREQUEST = 15,
     PLAYERNOTFOUND = 16,
+    GAMEDISABLED = 17,
+    PLAYERFULL = 18,
+    LESSMINENTRY = 19,
+    LESSTOSTART = 20,
+    CANTJOINGAME = 21,
 }
 
 errors.msg = {
@@ -38,6 +43,11 @@ errors.msg = {
     [errors.code.CANTQUITINNGAME] = '正在游戏中无法退出',
     [errors.code.ILLEGALREQUEST] = '非法请求',
     [errors.code.PLAYERNOTFOUND] = '玩家不存在,或者不在线',
+    [errors.code.GAMEDISABLED] = '游戏未开放',
+    [errors.code.PLAYERFULL] = '游戏人数已满',
+    [errors.code.LESSMINENTRY] = '金币不足',
+    [errors.code.LESSTOSTART] = '人数不足,无法开始游戏',
+    [errors.code.CANTJOINGAME] = '游戏中,无法加入',
 }
 
 return errors

@@ -89,3 +89,11 @@ function response.getagent(userid)
     end
     return errcode.code.SUCCESS,ONLINES[userid].agenthandle
 end
+
+function response.getgoldbyId(userid)
+    if not ONLINES[userid] then
+        return errcode.code.PLAYERNOTFOUND
+    else
+        return errcode.code.SUCCESS, ONLINES[userid].gold
+    end
+end

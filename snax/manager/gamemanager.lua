@@ -1,6 +1,7 @@
 local skynet = require "skynet"
 local snax = require "skynet.snax"
 local errcode = require "errorcode"
+local gamedata = require "gamedata"
 
 local GAMES
 local GSERVICES = {}
@@ -44,18 +45,20 @@ local function updategame()
 end
 
 local function allocgameservice()
+    --alloc queue players to exists availible game service
     for gid, gqueue in pairs(queue) do
         for rid, rqueue in pairs(gqueue) do
             if #rqueue > 0 then
                 for k, inst in pairs(GSERVICES[gid][rid] or {}) do
                     local canjoin, needstart, leftcount = inst.req.canjoin()
-                    if canjoin == true then
+                    if canjoin == errcode.code.SUCCESS then
                         for i = 1, needstart do
                             local userid = table.remove(rqueue,1)
                             if not userid then
                                 break
                             end
-                            inst.userjoin(userid)
+                            local succ = inst.userjoin(userid)
+                            snax.queryservice('hall').post.matched(userid,{errcode = errcode.code.SUCCESS , gameid = gid, roomid = rid, gsrvobj = inst})
                         end
                         for i = 1, leftcount - needstart do
                             local userid = table.remove(rqueue,1)
@@ -63,22 +66,34 @@ local function allocgameservice()
                                 break
                             end
                             inst.userjoin(userid)
+                            snax.queryservice('hall').post.matched(userid,{errcode = errcode.code.SUCCESS , gameid = gid, roomid = rid, gsrvobj = inst})
                         end
                         local bstart, needs = inst.req.gamestart()
-                        if not bstart then  --增加机器人
+                        if bstart ~= errcode.code.SUCCESS  then  --增加机器人
                             for i = 1, needs do
-
+                                local robot = snax.queryservice('robotmanager').req.getrobot()
+                                inst.userjoin(robot.userid)
                             end
+                            inst.req.gamestart()
                         end
                     end
                 end
 
                 -- 如果还有玩家没有分配,则需要创建新的游戏服务来分配玩家
-                if #rqueue > 0 then
+                while #rqueue > 0 do
+                    local game = GAMES[gid]
+                    local room = GAMES[gid][rid]
+                    local minplayers = game.minplayers
+                    local maxplayers = game.maxplayers
+                    local gametype = game.gametype
+                    local minentry = room.minentry
+                    local maxentry = room.maxentry
+
+                    assert(gamedata[gid])
+                    local gobj = snax.newservice(gamedata[gid].service,minplayers,maxplayers,gametype,minentry,maxentry)
+                    table.insert(GSERVICES[gid][rid],gobj)
 
                 end
-
-            
             end
         end
     end
@@ -116,6 +131,9 @@ function response.gamelist()
 end
 
 function accept.match(userid,gameid,roomid)
+    --condition check: 1. game enable ?  2.minentry ? ...
+
+
     queue[gameid] = queue[gameid] or {}
     queue[gameid][roomid] = queue[gameid][roomid] or {}
     table.insert(queue[gameid][roomid],userid)
