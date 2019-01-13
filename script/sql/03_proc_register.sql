@@ -43,7 +43,7 @@ label_reg:begin
         leave label_reg;
     end if;
 
-    select max(userid) into o_maxuserid from User;
+    select max(userid) into o_maxuserid from User where User.isrobot = 0;
     if ifnull(o_maxuserid,10000) <=> 10000 then
         set o_maxuserid = 10000;
     end if;

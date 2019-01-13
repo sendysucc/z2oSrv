@@ -27,3 +27,17 @@ function response.getrobot()
     table.insert(busyrobots,robot)
     return robot
 end
+
+function response.getgoldbyId(userid)
+    for k,v in pairs(idlerobots) do
+        if v.userid == userid then
+            return v.gold
+        end
+    end
+
+    for k,v in pairs(busyrobots) do
+        if v.userid == userid then
+            return v.gold
+        end
+    end
+end

@@ -91,9 +91,18 @@ function response.getagent(userid)
 end
 
 function response.getgoldbyId(userid)
+    if userid >= 900000 then
+        local gold = snax.queryservice('robotmanager').req.getgoldbyId(userid)
+        return errcode.code.SUCCESS, gold
+    end
+
     if not ONLINES[userid] then
         return errcode.code.PLAYERNOTFOUND
     else
         return errcode.code.SUCCESS, ONLINES[userid].gold
     end
+end
+
+function response.getuserbyId(userid)
+    return ONLINES[userid] or BREAKLINES[userid]
 end
