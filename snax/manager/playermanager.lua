@@ -26,6 +26,13 @@ function init(...)
     skynet.error('------> start playermanager service')
 end
 
+local function isrobot(userid)
+    if userid >= 900000 then
+        return true
+    end
+    return false
+end
+
 --[[
     为啥 PlayerManager 中需要在用户信息中保存 agent handle?
 
@@ -91,7 +98,7 @@ function response.getagent(userid)
 end
 
 function response.getgoldbyId(userid)
-    if userid >= 900000 then
+    if isrobot(userid) then
         local gold = snax.queryservice('robotmanager').req.getgoldbyId(userid)
         return errcode.code.SUCCESS, gold
     end
@@ -104,5 +111,11 @@ function response.getgoldbyId(userid)
 end
 
 function response.getuserbyId(userid)
-    return ONLINES[userid] or BREAKLINES[userid]
+    if isrobot(userid) then
+        local ret = snax.queryservice('robotmanager').req.findrobotbyId(userid)
+        return ret
+    else
+        return ONLINES[userid] or BREAKLINES[userid]
+    end
+    
 end

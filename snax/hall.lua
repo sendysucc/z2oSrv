@@ -29,10 +29,10 @@ function response.match(userid,gameid,roomid)
 
     userid_co[userid] = nil
     local resp = userid_matchinfo[userid]
-    print('-----> [matched] resp , errcode: ',resp.errcode)
-    for k,v in pairs(resp) do
-        print(k,v)
+    if resp.errcode == errcode.code.SUCCESS then
+        
     end
+
     return resp
 end
 

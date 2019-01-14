@@ -41,3 +41,19 @@ function response.getgoldbyId(userid)
         end
     end
 end
+
+function response.findrobotbyId(userid)
+    for k, uinfo in pairs(idlerobots) do
+        if uinfo.userid == userid then
+            return uinfo
+        end
+    end
+
+    for k,uinfo in pairs(busyrobots) do
+        if uinfo.userid == userid then
+            return uinfo
+        end
+    end
+
+    return nil
+end

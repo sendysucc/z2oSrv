@@ -29,11 +29,11 @@ function response.gamestart()
     for k,uid in pairs(players) do
         local uinfo = snax.queryservice('playermanager').req.getuserbyId(uid)
         table.insert(userinfos,{ seatno = k, nickname = uinfo.nickname, cellphone = uinfo.cellphone, 
-                    gold =  uinfo.gold, avatoridx = uinfo.avatoridx })
+                    gold =  uinfo.gold, avatoridx = uinfo.avatoridx , gender = uinfo.gender})
     end
 
     for k,uid in pairs(players) do
-        snax.queryservice('hall').post.matched(uid, { errcode = errcode.code.SUCCESS, gameid = gameid, roomid = roomid , gsrvobj = inst, players = userinfos})
+        snax.queryservice('hall').post.matched(uid, { errcode = errcode.code.SUCCESS, gameid = gameid, roomid = roomid , gsrvobj = snax.self(), players = userinfos})
     end
 
     print('--------->[gamestart] 2')

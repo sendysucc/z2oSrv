@@ -105,12 +105,22 @@ gamelist 8 {
     }
 }
 
+.player {
+    seatno 0 : integer
+    nickname 1 : string
+    cellphone 2 : string
+    gold 3 : integer
+    avatoridx 4 : integer
+    gender 5 : integer
+}
+
 match 9 {
     request {
         gameid 0 : integer
         roomid 1 : integer
     }
     response {
-        msg 0 : string
+        ret 0 : integer
+        players 1 : *player
     }
 }
