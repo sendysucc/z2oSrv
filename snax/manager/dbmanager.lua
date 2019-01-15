@@ -128,7 +128,6 @@ function response.loadrobots(startidx, count)
         skynet.error('[db] loadrobots errorno: ' .. ret.errno .. ', code:' .. ret.sqlstate)
         return {errcode = errcode.code.DBSYNTAXERROR}
     else
-        print('-------->loadrobots', #(ret[1]))
         return ret[1]
     end
 end

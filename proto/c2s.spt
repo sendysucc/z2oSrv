@@ -120,7 +120,7 @@ match 9 {
         roomid 1 : integer
     }
     response {
-        ret 0 : integer
+        errcode 0 : integer
         players 1 : *player
     }
 }

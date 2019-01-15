@@ -21,6 +21,7 @@ local _vcode                --验证码
 local REQUEST = {}
 local current_co 
 local game_matched
+local gaming_service        --正在玩的游戏服务对象
 
 local function send_package(response,data)
     if not response then
@@ -97,26 +98,16 @@ end
 
 function REQUEST.gamelist(args,response)
     local gamelist = snax.queryservice("hall").req.gamelist()
-    print('------> return gamelist', gamelist)
     send_package(response, gamelist)
 end
 
 function REQUEST.match(args,response)
     -- 将加入游戏请求抛给 playermanager ,然后挂起当前协成, 等待收到匹配结果后,唤醒当前协成,并响应客户端的请求
-    -- local ret = snax.queryservice("playermanager").post.joingame(userid,args.gameid, args.roomid)
     local matchedinfo = snax.queryservice('hall').req.match(userid,args.gameid,args.roomid)
-    
-    print('-------->[agent] game matched ')
-    for k,v in pairs(matchedinfo) do
-        print('----->matched :', k,v)
-    end
+    gaming_service = matchedinfo.gsrvobj
+    matchedinfo.gsrvobj = nil
     --todo: response to client
     send_package(response, matchedinfo )    
-end
-
-function accept.matched(match_info)
-    game_matched = match_info
-    skynet.wakeup(current_co)
 end
 
 function init(...)

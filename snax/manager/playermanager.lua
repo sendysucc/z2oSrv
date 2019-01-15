@@ -81,15 +81,6 @@ function response.logout(userid)
 
 end
 
-function accept.matched(userid,infos)
-    local agenthandle = ONLINES[userid].agenthandle
-    snax.bind(agenthandle,'agent').post.matched(infos)
-end
-
-function accept.joingame(userid,gameid,roomid)
-    local ret = snax.queryservice('gamemanager').post.joingame(userid,gameid,roomid)
-end
-
 function response.getagent(userid)
     if not ONLINES[userid] then
         return errcode.code.PLAYERNOTFOUND
@@ -117,5 +108,4 @@ function response.getuserbyId(userid)
     else
         return ONLINES[userid] or BREAKLINES[userid]
     end
-    
 end

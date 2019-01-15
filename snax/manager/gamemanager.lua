@@ -9,7 +9,6 @@ local alloc_co          --创建 game service 的协程
 local queue = {}
 local userid_co = {}
 
-
 --从数据库更新游戏列表
 local function updategame()
     local tmpGAMES = {}
@@ -34,14 +33,6 @@ local function updategame()
         end
     end
     GSERVICES = tempGSERVICES
-
-    -- for gid,rooms in pairs(GSERVICES) do
-    --     for rid, servs in pairs(rooms) do
-    --         for k,v in pairs(servs) do
-    --             print('---->gservices: ',gid,rid,k,v)
-    --         end
-    --     end
-    -- end
 end
 
 local function matchingplayer(rqueue,gameid,roomid)
@@ -55,9 +46,7 @@ local function matchingplayer(rqueue,gameid,roomid)
                     break
                 end
                 local succ = inst.req.userjoin(userid)
-                -- snax.queryservice('hall').post.matched(userid, { errcode = errcode.code.SUCCESS , gameid = gameid, roomid = roomid, gsrvobj = inst })
             end
-
             --游戏还剩余的座位人数
             for i = 1, leftcount - needstart do
                 local userid = table.remove(rqueue,1)
@@ -65,17 +54,13 @@ local function matchingplayer(rqueue,gameid,roomid)
                     break
                 end
                 inst.req.userjoin(userid)
-                -- snax.queryservice('hall').post.matched(userid, { errcode = errcode.code.SUCCESS, gameid = gameid, roomid = roomid , gsrvobj = inst})
             end
             -- 开始游戏, 如果游戏人数不足, 则分配机器人加入
             local bstart, needs = inst.req.gamestart()
             if bstart ~= errcode.code.SUCCESS then
                 local robot = snax.queryservice('robotmanager').req.getrobot()
-                print('-----> robot',robot.userid)
                 local ret = inst.req.userjoin(robot.userid)
-                print('-------><join ret :',ret)
             end
-
             inst.req.gamestart()
         end
     end
@@ -83,7 +68,6 @@ end
 
 local function allocgameservice()
     --alloc queue players to exists availible game service
-    print('--------> [allocgameservice] start')
     for gid, gqueue in pairs(queue) do
         for rid, rqueue in pairs(gqueue) do
             while #rqueue > 0 do
@@ -107,7 +91,6 @@ local function allocgameservice()
             end
         end
     end
-    print('--------> [allocgameservice] sleep 3 seconds')
     skynet.sleep(100 * 3)
 end
 
@@ -132,7 +115,6 @@ end
 
 function accept.match(userid,gameid,roomid)
     -- condition check: 1. game enable ?  2.minentry ? ...
-
     -- game enable ?
     if not GAMES[gameid] or GAMES[gameid].enable ~= 1 then
         snax.queryservice('hall').post.matched(userid,{ errcode = errcode.code.GAMEDISABLED })
@@ -147,18 +129,11 @@ function accept.match(userid,gameid,roomid)
 
     -- minentry ?
     local retcode,usergold = snax.queryservice('playermanager').req.getgoldbyId(userid)
-    if retcode ~= errcode.code.SUCCESS then
-        print('---------> get user gold failed')
-    else
-        print('---->usergold :', usergold , ' minentry: ', GAMES[gameid].rooms[roomid].minentry)
-    end
-    
-
+    usergold = usergold or 0
     if GAMES[gameid].rooms[roomid].minentry > usergold then
         snax.queryservice('hall').post.matched(userid, { errcode = errcode.code.LESSMINENTRY })
         return 
     end
-
     queue[gameid] = queue[gameid] or {}
     queue[gameid][roomid] = queue[gameid][roomid] or {}
     table.insert(queue[gameid][roomid],userid)

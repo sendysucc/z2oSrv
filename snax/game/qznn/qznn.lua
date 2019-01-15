@@ -3,7 +3,6 @@ local snax = require "skynet.snax"
 local logic = require "qznnlogic"
 local errcode = require "errorcode"
 
-
 local playing = false   --游戏是否开始
 local players = {}      --游戏中的玩家
 local minplayer = 0     --游戏最小人数
@@ -20,7 +19,6 @@ end
 
 --游戏开始
 function response.gamestart()
-    print('--------->[gamestart] 1',#players,minplayer)
     if #players < minplayer then
         return errcode.code.LESSTOSTART, (minplayer - #players)
     end
@@ -35,9 +33,6 @@ function response.gamestart()
     for k,uid in pairs(players) do
         snax.queryservice('hall').post.matched(uid, { errcode = errcode.code.SUCCESS, gameid = gameid, roomid = roomid , gsrvobj = snax.self(), players = userinfos})
     end
-
-    print('--------->[gamestart] 2')
-
     return errcode.code.SUCCESS , 0
 end
 

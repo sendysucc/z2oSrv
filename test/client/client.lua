@@ -194,6 +194,13 @@ print('------>gameid:',_gameid, '--roomid:',_roomid)
 send_request("match",{gameid = _gameid, roomid = _roomid })
 local res = receive_data()
 
+print('-=-->errcode:', res.errcode)
+for k,v in pairs(res.players) do
+	print('-----------------------')
+	for _k,_v in pairs(v) do
+		print(_k,_v)
+	end
+end
 
 
 

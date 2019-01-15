@@ -22,17 +22,12 @@ function response.match(userid,gameid,roomid)
     if userid_co[userid] then
         return 
     end
-    
     userid_co[userid] = coroutine.running()
     snax.queryservice('gamemanager').post.match(userid,gameid,roomid)
     skynet.wait()
 
     userid_co[userid] = nil
     local resp = userid_matchinfo[userid]
-    if resp.errcode == errcode.code.SUCCESS then
-        
-    end
-
     return resp
 end
 
