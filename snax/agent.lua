@@ -87,7 +87,7 @@ function REQUEST.login(args,response)
     local ret = snax.queryservice("login").req.login(args.cellphone, args.password, snax.self().handle)
     send_package(response,{errcode = ret.errcode , cellphone = ret.cellphone, password = ret.password , userid = ret.userid, 
                                                     username = ret.username , nickname = ret.nickname, gold = ret.gold, diamond = ret.diamond, avatorid = ret.avatorid , gender = ret.gender })
-    if ret.errcode == errcode.code.SUCCESS then
+    if ret.errcode == errcode.code.SUCCESS or ret.errcode == errcode.code.RECONNECT then
         userid = ret.userid
     end
 end

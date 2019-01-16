@@ -64,19 +64,19 @@ end
 
 --[[
     为啥 PlayerManager 中需要在用户信息中保存 agent handle?
-
     由于socket断开等消息是由agent来处理的 , 所以当用户断线时 , 需要通知PlayerManager
     让PlayerManager知道用户已经断线了.
 ]]
 function response.adduser(userinfo,agenthandle)
     local userid = userinfo.userid
-    if ONLINES[userid] and not ONLINES[userid].breakline then
+    if ONLINES[userid] and not ONLINES[userid].isbreak then
         skynet.error('user :' .. userinfo.userid .. ' already logined ')
         return errcode.code.ALREADLOGINED
     end
-    if ONLINES[userid] and ONLINES[userid].breakline then
+    if ONLINES[userid] and ONLINES[userid].isbreak then
         skynet.error('user : ' .. userinfo.userid ..  ' has breakline ')
-        ONLINES[userid].breakline = false
+        ONLINES[userid].isbreak = false
+        ONLINES[userid].agenthandle = agenthandle
         return errcode.code.RECONNECT, ONLINES[userid]
     end
     ONLINES[userid] = userinfo
@@ -88,7 +88,8 @@ function accept.breakline(agenthandle)
     for k,v in pairs(ONLINES) do
         if v.agenthandle == agenthandle then
             if v.gobj then
-                v.breakline = true
+                print('-----------> set isbreak to true')
+                v.isbreak = true
             else
                 clearuser(v.userid)
             end

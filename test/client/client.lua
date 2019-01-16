@@ -171,8 +171,10 @@ for k,v in pairs(rets) do
 end
 
 if rets.errcode ~= 0 then
-	print('------> login failed')
-	os.exit()
+	print('------> login failed',rets.errcode)
+	if rets.errcode ~= 12 then
+		os.exit()
+	end
 end
 
 send_request("gamelist")
