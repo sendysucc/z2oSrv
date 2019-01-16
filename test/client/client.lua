@@ -140,17 +140,17 @@ send_request("exse", {cse = crypt.base64encode(hmac) })
 
 local rets = receive_data()
 
-if rets.ret == 0 then
+if rets.errcode == 0 then
 	secret = tempsecret
 end
-print('-------->return : ', rets.ret)
+print('-------->return : ', rets.errcode)
 
 
 send_request("verifycode",{agentcode = 10001})
 
 local rets = receive_data()
 print('---------verifycode -----------')
-print(rets.ret)
+print(rets.errcode)
 print(rets.verifycode)
 
 -- send_request("register",{ cellphone = "09566014786" , password="sendysucc", agentcode=10001 , verifycode = rets.verifycode ,agentcode = 1,promotecode = 1})
@@ -161,7 +161,7 @@ print(rets.verifycode)
 send_request("register",{ cellphone = "09566014768" , password="sendysucc", agentcode=10001 , verifycode = rets.verifycode ,agentcode = 1,promotecode = 1})
 local rets = receive_data()
 print('---------register -----------')
-print(rets.ret)
+print(rets.errcode)
 
 send_request("login", {cellphone="09566014768", password="sendysucc"})
 local rets = receive_data()
@@ -170,7 +170,7 @@ for k,v in pairs(rets) do
 	print(k,v)
 end
 
-if rets.ret ~= 0 then
+if rets.errcode ~= 0 then
 	print('------> login failed')
 	os.exit()
 end

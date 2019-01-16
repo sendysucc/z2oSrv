@@ -24,7 +24,7 @@ label_createrob:begin
 
     set createcount = 100;
     set r_idx = 1;
-    set defaultwealth = 7400;
+    set defaultwealth = 745;
 
     select max(userid) into maxrobotid from User where User.isrobot = 1 ;
     if ifnull(maxrobotid,0) <=> 0 then
@@ -40,12 +40,12 @@ label_createrob:begin
         set r_cellphone = r_username;
         set r_gender = ( r_idx % 3 + 1) % 2;  #男:女 = 2:1
         set r_password = sha1(r_cellphone);
-        set r_gold = floor(rand() * 100) * 100;
-        if r_gold <=> 0 then
+        set r_gold = floor(rand() * 1000);
+        if r_gold < 10 then
             set r_gold = defaultwealth;
         end if;
-        set r_diamond = floor(rand() * 100) * 100;
-        if r_diamond <=> 0 then
+        set r_diamond = floor(rand() * 1000);
+        if r_diamond < 10 then
             set r_diamond = defaultwealth;
         end if;
 

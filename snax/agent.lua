@@ -55,45 +55,46 @@ function REQUEST.exse(args,response)
     local tempsecret = crypt.dhsecret(clientkey, serverkey)
     local shmac = crypt.hmac64(challenge,tempsecret)
     if chmac == shmac then
-        send_package(response, { ret = errcode.code.SUCCESS } )
+        send_package(response, { errcode = errcode.code.SUCCESS } )
         secret = tempsecret
     else
-        send_package(response, {ret = errcode.code.HANDSHAKEFAIL } )
+        send_package(response, {errcode = errcode.code.HANDSHAKEFAIL } )
     end
 end
 
 function REQUEST.verifycode(args,response)
     if req_verify_time > 0 and (skynet.now() - req_verify_time ) < 100 * 120 then
-        send_package(response, { ret = errcode.code.TOOOFTEN })   --间隔时间太短,请120秒后在获取验证码
+        send_package(response, { errcode = errcode.code.TOOOFTEN })   --间隔时间太短,请120秒后在获取验证码
     else
         req_verify_time = skynet.now()
         _vcode = genverifycode()
-        send_package(response, { ret = errcode.code.SUCCESS , verifycode = _vcode })
+        send_package(response, { errcode = errcode.code.SUCCESS , verifycode = _vcode })
     end
 end
 
 function REQUEST.register(args,response)
     if args.verifycode ~= _vcode then
-        send_package(response, { ret = errcode.code.VERIFYMISS })   --verifycode error
+        send_package(response, { errcode = errcode.code.VERIFYMISS })   --verifycode error
     else
         local retcode = errcode.code.OBJNOTEXISTS
         local ret = snax.queryservice("login").req.register(args.cellphone, args.password, args.agentcode,args.promotecode)
         retcode = ret
-        send_package(response,{ret = retcode})
+        send_package(response,{errcode = retcode})
     end
 end
 
 function REQUEST.login(args,response)
     local ret = snax.queryservice("login").req.login(args.cellphone, args.password, snax.self().handle)
-    send_package(response,{ret = ret.errcode , cellphone = ret.cellphone, password = ret.password , userid = ret.userid, 
+    send_package(response,{errcode = ret.errcode , cellphone = ret.cellphone, password = ret.password , userid = ret.userid, 
                                                     username = ret.username , nickname = ret.nickname, gold = ret.gold, diamond = ret.diamond, avatorid = ret.avatorid , gender = ret.gender })
     if ret.errcode == errcode.code.SUCCESS then
         userid = ret.userid
     end
 end
 
-function REQUEST.logout(userid)
+function REQUEST.logout(userid,response)
     local ret = snax.queryservice("login").req.logout(userid)
+    send_package(response,ret)
 end
 
 function REQUEST.gamelist(args,response)

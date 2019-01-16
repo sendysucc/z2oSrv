@@ -23,7 +23,7 @@ exse 3 {
         cse 0 : string
     }
     response {
-        ret 0 : integer
+        errcode 0 : integer
     }
 }
 
@@ -33,7 +33,7 @@ verifycode 4 {
     }
 
     response {
-        ret 0 : integer
+        errcode 0 : integer
         verifycode 1 : string
     }
 }
@@ -47,7 +47,7 @@ register 5 {
         promotecode 4 : integer
     }
     response {
-        ret 0 : integer 
+        errcode 0 : integer 
     }
 }
 
@@ -57,7 +57,7 @@ login 6 {
         password 1 : string
     }
     response {
-        ret 0 : integer
+        errcode 0 : integer
         cellphone 1 : string
         password 2 : string
         userid 3 : integer
@@ -75,7 +75,7 @@ logout 7 {
         userid 0 : integer
     }
     response {
-        ret 0 : integer
+        errcode 0 : integer
     }
 }
 

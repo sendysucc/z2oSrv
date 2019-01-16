@@ -35,6 +35,14 @@ local function updategame()
     GSERVICES = tempGSERVICES
 end
 
+local function addusertogame(gobj,userid)
+    local succ = gobj.req.userjoin(userid)
+    if succ ~= errcode.code.SUCCESS then
+        snax.queryservice('hall').post.matched(userid, { errcode = succ})
+    end
+    snax.queryservice('playermanager').post.joingamesucc(userid,gobj)
+end
+
 local function matchingplayer(rqueue,gameid,roomid)
     for k, inst in pairs(GSERVICES[gameid][roomid] or {}) do
         local canjoin, needstart ,leftcount = inst.req.canjoin()
@@ -45,7 +53,7 @@ local function matchingplayer(rqueue,gameid,roomid)
                 if not userid then
                     break
                 end
-                local succ = inst.req.userjoin(userid)
+                addusertogame(inst,userid)
             end
             --游戏还剩余的座位人数
             for i = 1, leftcount - needstart do
@@ -53,13 +61,16 @@ local function matchingplayer(rqueue,gameid,roomid)
                 if not userid then
                     break
                 end
-                inst.req.userjoin(userid)
+                addusertogame(inst,userid)
             end
             -- 开始游戏, 如果游戏人数不足, 则分配机器人加入
             local bstart, needs = inst.req.gamestart()
             if bstart ~= errcode.code.SUCCESS then
-                local robot = snax.queryservice('robotmanager').req.getrobot()
-                local ret = inst.req.userjoin(robot.userid)
+                local minmoney = GAMES[gameid].rooms[roomid].minentry or 0
+                for i = 1, needs do
+                    local robot = snax.queryservice('playermanager').req.getrobot(inst,minmoney)
+                    addusertogame(inst,robot.userid)
+                end
             end
             inst.req.gamestart()
         end

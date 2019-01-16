@@ -131,3 +131,14 @@ function response.loadrobots(startidx, count)
         return ret[1]
     end
 end
+
+function accept.createrobots()
+    local sql_str = string.format('call proc_createrobots();')
+    local ret = db:query(sql_str)
+    if ret.badresult then
+        skynet.error('[db] create robot errorno: ' .. ret.errno .. ', code:' .. ret.sqlstate)
+        return errcode.code.FAILED
+    else
+        return errcode.code.SUCCESS
+    end
+end

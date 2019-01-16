@@ -33,6 +33,7 @@ function response.gamestart()
     for k,uid in pairs(players) do
         snax.queryservice('hall').post.matched(uid, { errcode = errcode.code.SUCCESS, gameid = gameid, roomid = roomid , gsrvobj = snax.self(), players = userinfos})
     end
+    playing = true
     return errcode.code.SUCCESS , 0
 end
 

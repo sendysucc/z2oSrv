@@ -2,8 +2,9 @@ local skynet = require "skynet"
 local snax = require "skynet.snax"
 local errcode = require "errorcode"
 
+local loadcounts = 100  --默认每次加载机器人数量
+local alreadyload = 0   --已经加载机器人数量
 local ONLINES = {}
-local BREAKLINES = {}
 --[[
     userid
     username
@@ -20,17 +21,45 @@ local BREAKLINES = {}
     createtime
 ]]
 
-local userid_co = {}
-
-function init(...)
-    skynet.error('------> start playermanager service')
-end
-
 local function isrobot(userid)
     if userid >= 900000 then
         return true
     end
     return false
+end
+
+local function createrobots()
+    local ret = snax.queryservice('dbmanager').post.createrobots()
+end
+
+local function loadrobots()
+    skynet.error('loadrobots...')
+    while true do
+        local rets = snax.queryservice('dbmanager').req.loadrobots(alreadyload, needtoload or loadcounts) or {}
+        alreadyload = alreadyload + #rets
+        for k,v in pairs(rets) do
+            ONLINES[v.userid] = v
+        end
+        if #rets < loadcounts then
+            createrobots()
+            needtoload = (needtoload or loadcounts) - #rets
+        else
+            needtoload = 0    
+            break
+        end
+    end
+end
+
+local function clearuser(userid)
+    if ONLINES[userid] then
+        skynet.error('----->user cleared '.. userid)
+        ONLINES[userid] = nil
+    end
+end
+
+function init(...)
+    skynet.error('------> start playermanager service')
+    loadrobots()
 end
 
 --[[
@@ -41,13 +70,14 @@ end
 ]]
 function response.adduser(userinfo,agenthandle)
     local userid = userinfo.userid
-    if ONLINES[userid] then
+    if ONLINES[userid] and not ONLINES[userid].breakline then
         skynet.error('user :' .. userinfo.userid .. ' already logined ')
         return errcode.code.ALREADLOGINED
     end
-    if BREAKLINES[userid] then
+    if ONLINES[userid] and ONLINES[userid].breakline then
         skynet.error('user : ' .. userinfo.userid ..  ' has breakline ')
-        return errcode.code.RECONNECT, BREAKLINES[userid]
+        ONLINES[userid].breakline = false
+        return errcode.code.RECONNECT, ONLINES[userid]
     end
     ONLINES[userid] = userinfo
     ONLINES[userid].agenthandle = agenthandle
@@ -57,24 +87,18 @@ end
 function accept.breakline(agenthandle)
     for k,v in pairs(ONLINES) do
         if v.agenthandle == agenthandle then
-            if v.gaming then
-                v.agenthandle = nil
-                BREAKLINES[v.userid] = v
+            if v.gobj then
+                v.breakline = true
+            else
+                clearuser(v.userid)
             end
-            ONLINES[v.userid] = nil
-            print('----------->clear user :' .. v.userid)
             break
         end
     end
 end
 
 function accept.clearuser(userid)
-    if ONLINES[userid] then
-        ONLINES[userid] = nil
-    end
-    if BREAKLINES[userid] then
-        BREAKLINES[userid] = nil
-    end
+    clearuser()
 end
 
 function response.logout(userid)
@@ -89,11 +113,6 @@ function response.getagent(userid)
 end
 
 function response.getgoldbyId(userid)
-    if isrobot(userid) then
-        local gold = snax.queryservice('robotmanager').req.getgoldbyId(userid)
-        return errcode.code.SUCCESS, gold
-    end
-
     if not ONLINES[userid] then
         return errcode.code.PLAYERNOTFOUND
     else
@@ -102,10 +121,22 @@ function response.getgoldbyId(userid)
 end
 
 function response.getuserbyId(userid)
-    if isrobot(userid) then
-        local ret = snax.queryservice('robotmanager').req.findrobotbyId(userid)
-        return ret
-    else
-        return ONLINES[userid] or BREAKLINES[userid]
+    return ONLINES[userid] or {}
+end
+
+function response.getrobot(gameinst,minmoney)
+    while true do
+        for k,v in pairs(ONLINES) do
+            if v.isrobot == 1 and not v.gobj and v.gold >= minmoney then
+                return v
+            end
+        end
+        loadrobots()
+    end
+end
+
+function accept.joingamesucc(userid,gameinst)
+    if ONLINES[userid] then
+        ONLINES[userid].gobj = gameinst
     end
 end

@@ -12,8 +12,6 @@ skynet.start(function()
     snax.uniqueservice("gamemanager")
     --start player manager
     snax.uniqueservice("playermanager")
-    --start robot manager
-    snax.uniqueservice('robotmanager')
     --start filter 
     snax.uniqueservice("filter")
     --start hall

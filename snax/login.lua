@@ -33,5 +33,5 @@ function response.login(cellphone, password,agenthandle)
 end
 
 function response.logout(userid)
-    local ret = snax.queryservice("playermanager").logout(userid)
+    return snax.queryservice("playermanager").logout(userid)
 end
