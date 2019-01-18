@@ -1,6 +1,7 @@
 .package {
     type 0 : integer
     session 1 : integer
+    
 }
 
 handshake 1 {
@@ -122,5 +123,14 @@ match 9 {
     response {
         errcode 0 : integer
         players 1 : *player
+    }
+}
+
+game_hello 10 {
+    request {
+        msg 0 : string
+    }
+    response {
+        msg 0 : string
     }
 }
