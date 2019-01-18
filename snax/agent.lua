@@ -133,7 +133,11 @@ function accept.rawmessage(fd,msg,sz)
             end
         end
         local f = assert(REQUEST[name])
-        f(args,response)
+        if not f and gaming_service then
+            
+        else
+            f(args,response)
+        end
     else
 
     end
