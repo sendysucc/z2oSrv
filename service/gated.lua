@@ -37,7 +37,6 @@ function handler.message(fd,msg,sz)
         agent.post.rawmessage(fd,msg,sz)
     else
         skynet.error('client no agent ! drop message')
-
         close_client(fd)
     end
 end
