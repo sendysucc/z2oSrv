@@ -15,6 +15,7 @@ local serverkey
 local challenge
 local secret 
 local userid
+local session = 0
 
 local req_verify_time = 0   --请求验证码的时间
 local _vcode                --验证码
@@ -33,6 +34,18 @@ local function send_package(response,data)
     end
 	local package = string.pack(">s2", pack)
 	socket.write(fd, package)
+end
+
+local function send_request(name,args)
+    session = session + 1
+	local str = sp_request(name,args, session)
+	
+	if secret then
+		str = crypt.base64encode( crypt.desencode(secret,str) )
+	end
+
+    local package = string.pack(">s2",str)
+    socket.write(fd,package)
 end
 
 local function genverifycode()
@@ -111,6 +124,10 @@ function REQUEST.match(args,response)
     send_package(response, matchedinfo )    
 end
 
+function REQUEST.game_hello(args,response)
+    print('---------->game_hello ')
+    send_request("hello",{msg="request from server"})
+end
 
 function init(...)
     fd = ...
@@ -140,7 +157,7 @@ function accept.rawmessage(fd,msg,sz)
             f(args,response)
         end
     else
-
+        skynet.error('--------->RESPONSE',name,args.msg)
     end
 end
 

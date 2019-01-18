@@ -3,3 +3,11 @@
     session 1 : integer
 }
 
+hello 1 {
+    request {
+        msg 0 : string
+    }
+    response {
+        msg 0 : string
+    }
+}

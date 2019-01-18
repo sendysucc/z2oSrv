@@ -130,7 +130,4 @@ game_hello 10 {
     request {
         msg 0 : string
     }
-    response {
-        msg 0 : string
-    }
 }

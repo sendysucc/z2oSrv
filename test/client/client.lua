@@ -205,7 +205,10 @@ end
 -- end
 
 send_request("game_hello", {msg="hello from [game.hello]"})
+-- local res = receive_data()
+-- print('--------->game.hello -- > ',res.msg)
+
+
+print('---------> recevie request')
 local res = receive_data()
-print('--------->game.hello -- > ',res.msg)
-
-
+print(res.msg)
