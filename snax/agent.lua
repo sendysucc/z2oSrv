@@ -125,7 +125,6 @@ function REQUEST.match(args,response)
 end
 
 function REQUEST.game_hello(args,response)
-    print('---------->game_hello ')
     send_request("hello",{msg="request from server"})
 end
 

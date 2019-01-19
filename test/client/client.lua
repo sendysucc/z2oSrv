@@ -189,26 +189,26 @@ for k,v in pairs(res.games) do
 	end
 end
 
--- local _gameid = res.games[1].gameid
--- local _roomid = res.games[1].rooms[1].roomid
+local _gameid = res.games[1].gameid
+local _roomid = res.games[1].rooms[1].roomid
 
--- print('------>gameid:',_gameid, '--roomid:',_roomid)
--- send_request("match",{gameid = _gameid, roomid = _roomid })
--- local res = receive_data()
+print('------>gameid:',_gameid, '--roomid:',_roomid)
+send_request("match",{gameid = _gameid, roomid = _roomid })
+local res = receive_data()
 
--- print('-=-->errcode:', res.errcode)
--- for k,v in pairs(res.players) do
--- 	print('-----------------------')
--- 	for _k,_v in pairs(v) do
--- 		print(_k,_v)
--- 	end
--- end
+print('-=-->errcode:', res.errcode)
+for k,v in pairs(res.players) do
+	print('-----------------------')
+	for _k,_v in pairs(v) do
+		print(_k,_v)
+	end
+end
 
-send_request("game_hello", {msg="hello from [game.hello]"})
+-- send_request("game_hello", {msg="hello from [game.hello]"})
 -- local res = receive_data()
 -- print('--------->game.hello -- > ',res.msg)
 
 
-print('---------> recevie request')
-local res = receive_data()
-print(res.msg)
+-- print('---------> recevie request')
+-- local res = receive_data()
+-- print(res.msg)
